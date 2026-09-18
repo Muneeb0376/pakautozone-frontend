@@ -1,16 +1,15 @@
 import type { NextConfig } from "next";
 
-// Backend hamesha isi machine par localhost per chalta hai — kabhi tunnel nahi karna.
-// Sirf frontend (port 3000) ko ngrok se tunnel karo; Next.js server khud
-// backend se baat karega (server-to-server, same machine).
-const BACKEND_ORIGIN = process.env.BACKEND_ORIGIN || 'http://localhost:5000';
+const BACKEND_ORIGIN =
+  process.env.NEXT_PUBLIC_API_BASE_URL ||
+  process.env.BACKEND_ORIGIN ||
+  'https://auto-marketplace-backend-production.up.railway.app';
 
 const nextConfig: NextConfig = {
-  // Ngrok domain allow taake mobile par HMR/dev resources block na hon
   allowedDevOrigins: [
-    'coasting-diner-cannon.ngrok-free.dev',
-    '192.168.0.117',
     'localhost:3000',
+    '127.0.0.1:3000',
+    'pakautozone-frontend.vercel.app',
   ],
 
   images: {
