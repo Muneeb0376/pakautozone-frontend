@@ -1,0 +1,1299 @@
+/* Urdu font import — @import rules ko sabse upar hona zaroori hai
+   (CSS spec: @import must precede all rules except @charset/@layer),
+   isi wajah se ye line file ke end se yahan move ki gayi hai. */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;600;700&family=Noto+Sans+Arabic:wght@400;500;700&display=swap');
+
+/* Tailwind v4 ka standard directive pure framework ko inject karne ke liye */
+@import "tailwindcss";
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* ✅ MOBILE OVERFLOW FIX — koi bhi element viewport se bahar na jaye,
+   isse mobile per page "zoomed out" ya squeezed nahi dikhega */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+img, video {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ============================================
+   THEME SYSTEM — Light (default) aur Dark mode
+   data-theme attribute <html> tag par lagta hai
+   ============================================ */
+:root,
+[data-theme="light"] {
+  /* ✅ UPDATED (per feedback) — pehle inme halka off-white/grey tint tha
+     (#f5f6f8, #f0f2f5) taake sections ke beech subtle separation dikhe.
+     Ab sab flat #ffffff — light mode mein koi shade/tint kahin bhi nahi,
+     poori site ek hi plain white. */
+  --bg-page: #ffffff;
+  --bg-surface: #ffffff;
+  --bg-surface-alt: #ffffff;
+  /* ✅ UPDATED (per feedback) — light theme mein hero ab poora white hai,
+     koi black/dark gradient nahi. Depth sirf subtle warm orange/amber
+     tints se aati hai (halka cream/orange wash), taake white base ke
+     upar bhi brand ka orange/gold accent jhalke, lekin blackish kabhi
+     na ho. Dark theme apna purana near-black gradient hi rakhta hai
+     (neeche [data-theme="dark"] block mein unchanged). */
+  --bg-hero: linear-gradient(160deg, #ffffff 0%, #fff9f0 25%, #fdecc9 50%, #fff6e6 75%, #ffffff 100%);
+  --text-primary: #161616;
+  --text-secondary: #5a5a5a;
+  --text-muted: #8a8a8a;
+  --border-color: #e8e8e8;
+  --accent: #e8b84b;
+  --accent-text: #161616;
+  --card-bg: #ffffff;
+  --skeleton-bg: #e8e8e8;
+  /* ✅ NEW: secondary accent (dashboard buttons/icons use this gradient) +
+     a soft glow tone, kept consistent across both themes */
+  --accent-2-from: #3b82f6;
+  --accent-2-to: #22d3ee;
+  --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  --glow-1: rgba(59, 130, 246, 0.08);
+  --glow-2: rgba(34, 211, 238, 0.08);
+  /* ✅ UPDATED (per feedback) — light mode mein ab koi bhi gradient/tint
+     nahi, bilkul flat plain white. Warm cream gradient hata diya gaya
+     kyunke light theme mein "sab kuch a to z white" chahiye tha, koi
+     shade patch nahi. Dark mode mein iska warm near-black look intact
+     hai (neeche [data-theme="dark"] block mein). */
+  --bg-section-accent: #ffffff;
+  /* ✅ NEW — Navbar/header ka dedicated solid token. Pehle Navbar
+     .glass-card (var(--card-bg)) use karta tha jo light mein to white
+     hi tha, lekin dark mode mein grey (#18181a) ban jata tha aur Hero
+     ke near-black gradient se mismatch karta tha. Light mein flat white,
+     dark mein neeche hero ke gradient ke pehle stop (#060606) jaisa
+     exact solid black — koi shade/tint nahi. */
+  --bg-header: #ffffff;
+
+  /* ✅ DASHBOARD — Seller/Showroom page ke stat cards aur sections ke liye
+     amber/yellow-tinted tokens. Light mode: very soft warm amber wash —
+     branded feel, flat white se alag dikh-ta hai lekin bright/harsh nahi.
+     Listing-add CTA section ka apna slightly stronger amber tint hai. */
+  --bg-dash-page:       #fffdf7;
+  --bg-dash-card:       rgba(232, 184, 75, 0.07);
+  --border-dash-card:   rgba(232, 184, 75, 0.25);
+  --bg-dash-cta:        rgba(232, 184, 75, 0.10);
+  --border-dash-cta:    rgba(232, 184, 75, 0.35);
+  --bg-dash-new-btn:    #e8b84b;
+  --text-dash-new-btn:  #161616;
+}
+
+[data-theme="dark"] {
+  --bg-page: #0c0c0d;
+  --bg-surface: #18181a;
+  --bg-surface-alt: #212124;
+  --bg-hero: linear-gradient(160deg, #060606 0%, #141414 30%, #1c1a12 55%, #100f0d 78%, #050505 100%);
+  --text-primary: #f3f3f3;
+  --text-secondary: #b5b5b5;
+  --text-muted: #828282;
+  --border-color: #2a2a2d;
+  --accent: #e8b84b;
+  --accent-text: #161616;
+  --card-bg: #18181a;
+  --skeleton-bg: #232326;
+  --accent-2-from: #3b82f6;
+  --accent-2-to: #22d3ee;
+  --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+  --glow-1: rgba(59, 130, 246, 0.12);
+  --glow-2: rgba(34, 211, 238, 0.12);
+  /* ✅ NEW: dark mode mein near-black gradient — pehle wale bg-gray-950
+     jaisa look, lekin ab theme-controlled token se. */
+  --bg-section-accent: linear-gradient(150deg, #0a0a0a 0%, #161412 55%, #0c0c0c 100%);
+  /* ✅ NEW — Hero gradient (--bg-hero) ka pehla stop bilkul #060606 hai,
+     isliye Navbar ko bhi wahi exact solid black diya taake dono ek
+     dusre se seamlessly juden, koi grey "shade" na dikhe. */
+  --bg-header: #060606;
+
+  /* ✅ DASHBOARD — Dark mode: deep near-black base pe amber glow —
+     cards dark hain lekin amber tint clearly visible hai, flat grey
+     se bilkul alag. CTA section thoda zyada amber glow leta hai. */
+  --bg-dash-page:       #0e0d0a;
+  --bg-dash-card:       rgba(232, 184, 75, 0.09);
+  --border-dash-card:   rgba(232, 184, 75, 0.20);
+  --bg-dash-cta:        rgba(232, 184, 75, 0.12);
+  --border-dash-cta:    rgba(232, 184, 75, 0.30);
+  --bg-dash-new-btn:    #e8b84b;
+  --text-dash-new-btn:  #161616;
+}
+
+body {
+  background: var(--bg-page);
+  color: var(--text-primary);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Humari custom animation jo task ke liye chahiye thi */
+:root {
+  --animate-pulse-btn: pulse-btn 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-btn {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.05);
+  }
+}
+
+/* Fallback class mapping taake Navbar directly target kar sake */
+.animate-pulse-btn {
+  animation: var(--animate-pulse-btn);
+}
+
+/* 3D Card Stack Carousel — perspective container */
+.card-stack-perspective {
+  perspective: 1400px;
+}
+
+/* ============================================
+   ✅ "Pak Auto Zone" header logo — gear + wrench +
+   car badge (used in Navbar/Logo.jsx). Sirf outer
+   gear ring continuously ghoomta hai (jaisa
+   mechanic-shop badge logos mein hota hai), car +
+   wrench center mein static rehte hain. Colors
+   theme variables se aate hain, hardcoded nahi —
+   isliye light/dark dono mein khud match ho jate
+   hain.
+   ⚠️ NOTE: purani "3D driving car" animation (bob +
+   spinning wheels + moving road-dash) is purpose se
+   hata di gayi hai kyunke Logo.jsx ab us purane SVG
+   ko render hi nahi karta — wo dead/unused CSS thi
+   aur confusion create kar rahi thi.
+   ============================================ */
+.pak-logo-stage svg {
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.18));
+}
+
+.pak-logo-gear-spin {
+  animation: pak-logo-gear-spin 9s linear infinite;
+}
+
+@keyframes pak-logo-gear-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pak-logo-gear-spin {
+    animation: none !important;
+  }
+}
+
+/* ============================================
+   ✅ PHASE 6 — Solid Surface Design Tokens
+   (replaces the old "Phase 10" frosted-glass/mirror
+   system). Poori app me isi jagah se saari
+   card/glow values control hongi — koi hardcoded
+   value kahin aur nahi likhni.
+
+   Rationale: dark bg-white/5 + backdrop-blur cards
+   render inconsistently (kabhi solid, kabhi
+   half-transparent) aur text contrast kam karte hain.
+   Ab .glass-card solid --card-bg/--border-color use
+   karta hai, bilkul jaisa register-showroom/page.jsx
+   (reference implementation) already karta tha. Blur
+   sirf actual modal/dropdown overlays ke liye alag
+   .overlay-blur class me rakha gaya hai — poore page
+   background par nahi.
+   ============================================ */
+.glass-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--card-shadow);
+}
+
+/* ============================================
+   ✅ THEME-AWARE UTILITY CLASSES
+   Homepage/section components pehle hardcoded
+   Tailwind classes (bg-white, bg-gray-50,
+   text-gray-900, text-gray-400 waghera) use kar
+   rahe thay — jo data-theme switch par bilkul
+   react nahi karte thay. In utility classes ko
+   use karo taake har section light/dark dono
+   modes me sahi tareeqe se switch ho.
+   ============================================ */
+.bg-page-base   { background: var(--bg-page); }
+.bg-surface      { background: var(--bg-surface); }
+.bg-surface-alt  { background: var(--bg-surface-alt); }
+.bg-section-accent { background: var(--bg-section-accent); }
+.bg-header       { background: var(--bg-header); }
+.text-theme-primary   { color: var(--text-primary); }
+.text-theme-secondary { color: var(--text-secondary); }
+.text-theme-muted     { color: var(--text-muted); }
+.border-theme    { border-color: var(--border-color); }
+.skeleton-block  { background: var(--skeleton-bg); }
+
+/* ✅ DASHBOARD TOKENS — seller/showroom pages ke liye amber-tinted classes.
+   Inline style se bhi use ho sakti hain: style={{ background: 'var(--bg-dash-card)' }} */
+.bg-dash-page    { background: var(--bg-dash-page); }
+.bg-dash-card    { background: var(--bg-dash-card);   border: 1px solid var(--border-dash-card); }
+.bg-dash-cta     { background: var(--bg-dash-cta);    border: 1px solid var(--border-dash-cta); }
+.btn-dash-new    { background: var(--bg-dash-new-btn); color: var(--text-dash-new-btn); }
+
+/* Opt-in blur — sirf modals/dropdowns jo page content
+   ke upar float karte hain wahan use karo, kabhi bhi
+   full-page background par nahi. */
+.overlay-blur {
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+/* Hover pe soft glow + halka sa lift */
+.glow-hover {
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+.glow-hover:hover {
+  box-shadow: 0 10px 30px -6px var(--glow-1), var(--card-shadow);
+  transform: translateY(-3px);
+}
+
+/* Mouse-move se subtle 3D tilt — --rx/--ry component ke JS se update hongay */
+.tilt-3d {
+  --rx: 0deg;
+  --ry: 0deg;
+  transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry));
+  transition: transform 0.15s ease-out;
+  will-change: transform;
+}
+
+/* Touch devices (mobile) pe tilt disable — na to mousemove milta hai
+   na perf ke liye zaroori hai */
+@media (hover: none) {
+  .tilt-3d {
+    transform: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glow-hover,
+  .tilt-3d {
+    transition: none !important;
+  }
+  .glow-hover:hover {
+    transform: none;
+  }
+}
+/* ============================================================
+   URDU + RTL — ye block globals.css ke AAKHIR mein paste karein.
+
+   Do masle jo Urdu par zahir hote hain:
+
+   1) FONT — layout.tsx mein Geist font hai jiska subset sirf 'latin' hai.
+      Urdu ke huroof us mein hain hi nahi, is liye browser koi bhi system
+      font utha leta hai — har machine par alag aur aksar bad-soorat.
+
+   2) LINE HEIGHT — Urdu ke huroof Latin se ooncha jagah lete hain. Aam
+      line-height par ooper neeche ki lines aapas mein takrati hain.
+
+   Font Google Fonts se aata hai; agar aap self-host karna chahein to
+   next/font se bhi laga sakte hain (behtar performance).
+
+   Note: is font ka @import ab file ke start mein move kar diya gaya
+   hai (CSS rule: @import hamesha sabse pehle hona chahiye).
+   ============================================================ */
+
+/* Nastaliq khoobsurat hai lekin ooncha aur susat hai — is liye sirf
+   parhne wale bare text (heading, paragraph) par. Buttons, labels aur
+   chhote UI elements par Noto Sans Arabic, jo compact aur saaf hai. */
+html.lang-ur,
+html.lang-ur body {
+  font-family: 'Noto Sans Arabic', system-ui, sans-serif;
+}
+
+html.lang-ur h1,
+html.lang-ur h2,
+html.lang-ur h3,
+html.lang-ur p {
+  font-family: 'Noto Nastaliq Urdu', 'Noto Sans Arabic', serif;
+  line-height: 2.1;      /* Nastaliq ko saans lene ki jagah chahiye */
+}
+
+html.lang-ur h1 { line-height: 1.8; }
+
+/* Chhote UI elements par Nastaliq nahi — wahan jagah kam hoti hai */
+html.lang-ur button,
+html.lang-ur input,
+html.lang-ur select,
+html.lang-ur textarea,
+html.lang-ur label,
+html.lang-ur .text-xs,
+html.lang-ur .text-\[10px\],
+html.lang-ur .text-\[11px\] {
+  font-family: 'Noto Sans Arabic', system-ui, sans-serif;
+  line-height: 1.9;
+}
+
+/* ── RTL ──
+   Tailwind mein `rtl:` variant pehle se maujood hai aur <html dir="rtl">
+   par khud chalta hai. Neeche sirf wo cheezein hain jo class se theek
+   nahi hotin. */
+
+/* Numbers hamesha LTR — "PKR 200,000" RTL mein ulta ho jata hai */
+html[dir='rtl'] .price,
+html[dir='rtl'] .number,
+html[dir='rtl'] [data-ltr] {
+  direction: ltr;
+  unicode-bidi: embed;
+  display: inline-block;
+}
+
+/* Phone number, email aur URL bhi hamesha LTR */
+html[dir='rtl'] a[href^='tel:'],
+html[dir='rtl'] a[href^='mailto:'],
+html[dir='rtl'] .font-mono {
+  direction: ltr;
+  unicode-bidi: embed;
+}
+
+/* Aage/peeche wale arrows RTL mein palat jane chahiye */
+html[dir='rtl'] .flip-rtl {
+  transform: scaleX(-1);
+}
+
+/* Horizontal scroll wali liston ka rukh */
+html[dir='rtl'] .no-scrollbar,
+html[dir='rtl'] .scrollbar-hide {
+  direction: rtl;
+}
+
+/* ============================================================
+   PAK AUTO ZONE — LOGO (gear + car layer)
+
+   Ye block globals.css ke AAKHIR mein wale purane
+   "PAK AUTO ZONE — gear ka ghoomna" block ki JAGAH lagana hai.
+   Purana block hata dein, ye paste kar dein.
+   ============================================================ */
+
+/* ── Light theme: gehra gunmetal gear ── */
+:root,
+[data-theme='light'] {
+  --gear-1: #4a4f54;      /* upar ki chamak */
+  --gear-2: #2a2e33;
+  --gear-3: #15181b;      /* darmiyan ka gehra hissa */
+  --gear-4: #31363b;
+  --gear-5: #0d0f11;      /* neeche ka saya */
+
+  --gear-edge-hi:  #c3c7ca;   /* bevel ki roshni */
+  --gear-edge-mid: #6b7075;
+  --gear-edge-lo:  #08090a;
+
+  --gear-groove: #0a0c0e;     /* machined halqe */
+  --gear-line:   #7c8185;
+
+  --logo-car-filter: none;
+  --logo-glow: none;
+}
+
+/* ── Dark theme ──
+   Aapka header dark mode mein #060606 hai — takreeban kaala. Wahan
+   gehra gunmetal gear ghayab ho jata hai, isliye yahan gear ko halka
+   kar diya gaya hai (ulta karne ke bajaye — poora safed gear plastic
+   jaisa lagta hai, metal nahi). */
+[data-theme='dark'] {
+  --gear-1: #8e949b;
+  --gear-2: #5c6169;
+  --gear-3: #3a3f45;
+  --gear-4: #6b717a;
+  --gear-5: #2a2e33;
+
+  --gear-edge-hi:  #e8ebee;
+  --gear-edge-mid: #9aa0a8;
+  --gear-edge-lo:  #1a1d21;
+
+  --gear-groove: #191c20;
+  --gear-line:   #b8bdc4;
+
+  /* Car layer ek PNG hai — uska rang badla nahi ja sakta, isliye CSS
+     filter se roshan karte hain. 1.4x par ye kaale par saaf dikhta hai
+     aur metallic taasur bhi barqarar rehta hai; is se zyada karne par
+     sona dhul jata hai aur car flat grey lagne lagti hai. */
+  --logo-car-filter: brightness(1.4) contrast(1.06);
+
+  /* Halka sunehri halo — logo ko kaale background se utha deta hai */
+  --logo-glow: 0 0 18px rgba(232, 184, 75, 0.16);
+}
+
+/* ── Car layer ── */
+.paz-car {
+  filter: var(--logo-car-filter);
+}
+
+/* ── Poora badge ── */
+.paz-logo {
+  filter: drop-shadow(var(--logo-glow, none));
+  transition: filter 0.25s ease;
+}
+
+/* Hover par halo thora tez — chhota sa jawab */
+a:hover .paz-logo {
+  filter: drop-shadow(0 0 22px rgba(232, 184, 75, 0.28));
+}
+
+/* ── Gear ka ghoomna ── */
+.paz-gear-spin {
+  /* transform-box aur transform-origin dono zaroori hain. Inke bagair
+     SVG group canvas ke 0,0 kone ke gird ghoomta hai aur logo se bahar
+     nikal jata hai. */
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: paz-gear-rotate 20s linear infinite;
+  will-change: transform;
+}
+
+@keyframes paz-gear-rotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }   /* mosbat darja = clockwise */
+}
+
+a:hover .paz-gear-spin {
+  animation-duration: 6s;
+}
+
+/* Jinhon ne motion kam karne ki setting lagayi ho */
+@media (prefers-reduced-motion: reduce) {
+  .paz-gear-spin,
+  a:hover .paz-gear-spin {
+    animation: none;
+  }
+}
+
+/* ============================================================
+   HERO KA BRAND BADGE
+
+   HeroSection.jsx ke andar ek alag layer hai (.paz-hero-badge),
+   --bg-hero ka hissa NAHI. Isi liye iski jagah, size aur opacity
+   alag alag control ho sakti hai — aur hero ka gradient saaf rehta
+   hai, koi patti nahi banti.
+
+   Opacity PNG ke andar bake hai (light 85%, dark 90% + 1.3x roshan),
+   kyunki CSS mein ek background layer ki alag opacity set nahi ho
+   sakti. Badge ke BAYEIN kinare par alpha dheere dheere ghatta hai,
+   is liye text wali taraf sakht kinara nahi banta.
+   ============================================================ */
+
+.paz-hero-badge {
+  width: min(46%, 620px);
+  background-image: url('/paz-badge-light.png');
+  background-repeat: no-repeat;
+  background-position: right center;
+  background-size: contain;
+}
+
+/* Dark theme mein badge ke PEECHE narm warm glow.
+
+   Wajah: ye logo safed background ke liye bana tha — uske kinare par
+   apna silver bevel aur drop shadow baka hua hai. Kaale par wo safed
+   outline jaisa lagta hai, jaise sticker chipka diya ho.
+
+   Us bevel ko image se hataya nahi ja sakta (uske pixels logo ka hissa
+   hain — hatane par gear ke daant aur text bhi kat jate hain; ye aazma
+   kar dekh liya). Isliye usay MITANE ki bajaye JAWAZ diya gaya hai:
+   peeche halka sunehri glow, jismein wo kinara ghul jata hai aur
+   jaan boojh kar diya gaya lagta hai. */
+[data-theme='dark'] .paz-hero-badge {
+  background-image:
+    url('/paz-badge-dark.png'),
+    radial-gradient(closest-side circle at 72% 50%,
+                    rgba(232, 184, 75, 0.17) 0%,
+                    rgba(232, 184, 75, 0.07) 45%,
+                    transparent 72%);
+  background-size: contain, 150% 150%;
+  background-position: right center, right center;
+  background-repeat: no-repeat, no-repeat;
+}
+
+/* Tang screens par badge chhota aur kinare par — warna text ke peeche
+   aa kar parhna mushkil kar deta hai. */
+@media (max-width: 1200px) {
+  .paz-hero-badge {
+    width: min(38%, 460px);
+    background-position: right -4% center;
+  }
+}
+/* ══════════════════════════════════════════════════════════════
+   BLOG — article typography (.blog-prose)
+   Public blog post ka body isi class se style hota hai.
+   BlogContent.jsx is class ko lagata hai.
+   ══════════════════════════════════════════════════════════════ */
+
+.blog-prose {
+  color: var(--text-primary);
+  font-size: 1.0625rem;   /* 17px — lambi reading ke liye 16 se behtar */
+  line-height: 1.75;
+  word-break: break-word;
+}
+
+/* ── Paragraphs ── */
+.blog-prose p {
+  margin: 0 0 1.35em;
+  color: var(--text-primary);
+}
+
+/* ── Headings — H1 title ke liye reserved hai, body H2 se shuru hoti hai ── */
+.blog-prose h2 {
+  font-size: 1.6rem;
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  margin: 2.2em 0 0.7em;
+  color: var(--text-primary);
+}
+
+.blog-prose h3 {
+  font-size: 1.28rem;
+  font-weight: 700;
+  line-height: 1.3;
+  margin: 1.8em 0 0.6em;
+  color: var(--text-primary);
+}
+
+.blog-prose h4 {
+  font-size: 1.08rem;
+  font-weight: 700;
+  margin: 1.6em 0 0.5em;
+  color: var(--text-primary);
+}
+
+/* Pehla heading upar se itni jagah na chhode */
+.blog-prose > :first-child { margin-top: 0; }
+.blog-prose > :last-child  { margin-bottom: 0; }
+
+/* ── Lists ── */
+.blog-prose ul,
+.blog-prose ol {
+  margin: 0 0 1.35em;
+  padding-inline-start: 1.5em;
+}
+
+.blog-prose ul { list-style: disc; }
+.blog-prose ol { list-style: decimal; }
+
+.blog-prose li { margin: 0.4em 0; }
+.blog-prose li::marker { color: var(--accent); }
+
+/* Nested list */
+.blog-prose li > ul,
+.blog-prose li > ol { margin: 0.4em 0; }
+
+/* ── Links ── */
+.blog-prose a {
+  color: var(--text-primary);
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+  text-underline-offset: 3px;
+  text-decoration-thickness: 2px;
+  font-weight: 600;
+  transition: color 0.15s ease;
+}
+
+.blog-prose a:hover { color: var(--accent); }
+
+/* ── Images (inline, editor se lagai hui) ── */
+.blog-prose img,
+.blog-prose .blog-inline-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 14px;
+  margin: 2em 0;
+  border: 1px solid var(--border-color);
+}
+
+.blog-prose video {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  margin: 2em 0;
+  border-radius: 14px;
+  border: 1px solid var(--border-color);
+  background: #000;
+}
+
+.blog-prose iframe {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  height: auto;
+  margin: 2em 0;
+  border: 0;
+  border-radius: 14px;
+  background: #000;
+}
+
+.blog-prose figure { margin: 2em 0; }
+
+.blog-prose figcaption {
+  font-size: 0.82rem;
+  text-align: center;
+  margin-top: 0.7em;
+  color: var(--text-muted);
+}
+
+/* ── Blockquote — accent bar ke saath ── */
+.blog-prose blockquote {
+  margin: 1.8em 0;
+  padding: 0.2em 0 0.2em 1.2em;
+  border-inline-start: 3px solid var(--accent);
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.blog-prose blockquote p:last-child { margin-bottom: 0; }
+
+/* ── Code ── */
+.blog-prose code {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.88em;
+  padding: 0.15em 0.42em;
+  border-radius: 6px;
+  background: var(--bg-surface-alt);
+  color: var(--text-primary);
+}
+
+.blog-prose pre {
+  margin: 1.6em 0;
+  padding: 1.1em 1.3em;
+  border-radius: 12px;
+  overflow-x: auto;
+  background: var(--bg-surface-alt);
+  border: 1px solid var(--border-color);
+}
+
+.blog-prose pre code {
+  padding: 0;
+  background: transparent;
+  font-size: 0.86rem;
+  line-height: 1.6;
+}
+
+/* ── Divider ── */
+.blog-prose hr {
+  margin: 2.6em 0;
+  border: none;
+  border-top: 1px solid var(--border-color);
+}
+
+/* ── Tables ── */
+.blog-prose table {
+  width: 100%;
+  margin: 1.8em 0;
+  border-collapse: collapse;
+  font-size: 0.94rem;
+}
+
+.blog-prose th,
+.blog-prose td {
+  padding: 0.7em 0.9em;
+  border: 1px solid var(--border-color);
+  text-align: start;
+}
+
+.blog-prose th {
+  background: var(--bg-surface-alt);
+  font-weight: 700;
+}
+
+/* ── Emphasis ── */
+.blog-prose strong { font-weight: 700; color: var(--text-primary); }
+.blog-prose mark {
+  background: var(--accent);
+  color: var(--accent-text);
+  padding: 0.05em 0.25em;
+  border-radius: 4px;
+}
+
+/* ── Mobile par thoda chhota ── */
+@media (max-width: 640px) {
+  .blog-prose      { font-size: 1rem; }
+  .blog-prose h2   { font-size: 1.4rem; }
+  .blog-prose h3   { font-size: 1.16rem; }
+  .blog-prose img  { border-radius: 10px; margin: 1.5em 0; }
+}
+
+/* Urdu par font aur line-height thoda kushada — i18nContext <html> par
+   .lang-ur class lagata hai */
+.lang-ur .blog-prose {
+  line-height: 2;
+  font-size: 1.1rem;
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   BLOG — editor ke andar likhne ki jagah (.blog-editor-body)
+   RichTextEditor.jsx ye class TipTap ko deta hai.
+   Maqsad: jo admin likh raha hai wo bilkul waisa hi dikhe jaisa
+   publish hone ke baad dikhega (WYSIWYG).
+   ══════════════════════════════════════════════════════════════ */
+
+.blog-editor-body {
+  min-height: 460px;
+  padding: 1.6rem 1.5rem;
+  outline: none;
+  color: var(--text-primary);
+  font-size: 1.0625rem;
+  line-height: 1.75;
+}
+
+/* Editor ke andar wahi typography jo article par hai */
+.blog-editor-body p           { margin: 0 0 1.3em; }
+.blog-editor-body h2          { font-size: 1.55rem; font-weight: 800; margin: 1.9em 0 0.6em; line-height: 1.25; }
+.blog-editor-body h3          { font-size: 1.25rem; font-weight: 700; margin: 1.6em 0 0.5em; }
+.blog-editor-body h4          { font-size: 1.06rem; font-weight: 700; margin: 1.4em 0 0.45em; }
+.blog-editor-body ul          { list-style: disc;    margin: 0 0 1.3em; padding-inline-start: 1.5em; }
+.blog-editor-body ol          { list-style: decimal; margin: 0 0 1.3em; padding-inline-start: 1.5em; }
+.blog-editor-body li          { margin: 0.35em 0; }
+.blog-editor-body li::marker  { color: var(--accent); }
+
+.blog-editor-body blockquote {
+  margin: 1.5em 0;
+  padding-inline-start: 1.1em;
+  border-inline-start: 3px solid var(--accent);
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.blog-editor-body a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.blog-editor-body img,
+.blog-editor-body .blog-inline-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  margin: 1.6em 0;
+  border: 1px solid var(--border-color);
+}
+
+/* Cursor jis image par ho wo highlight ho — pata chale ke select hui hai */
+.blog-editor-body img.ProseMirror-selectednode {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.blog-editor-body pre {
+  margin: 1.4em 0;
+  padding: 1em 1.2em;
+  border-radius: 10px;
+  background: var(--bg-surface-alt);
+  border: 1px solid var(--border-color);
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.86rem;
+  overflow-x: auto;
+}
+
+.blog-editor-body code {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.88em;
+  padding: 0.15em 0.4em;
+  border-radius: 6px;
+  background: var(--bg-surface-alt);
+}
+
+.blog-editor-body hr {
+  margin: 2em 0;
+  border: none;
+  border-top: 1px solid var(--border-color);
+}
+
+/* Khali editor mein halka sa hint */
+.blog-editor-body p.is-editor-empty:first-child::before {
+  content: 'Yahan se likhna shuru karein...';
+  float: inline-start;
+  height: 0;
+  pointer-events: none;
+  color: var(--text-muted);
+}
+/* ══════════════════════════════════════════════════════════════════
+   ✅ PHASE 1 ADDITIONS — ye poora block copy kar ke apni maujooda
+      frontend/app/globals.css ke SAB SE AAKHIR mein paste kar dein.
+      (Ye alag file sirf aap ki asaani ke liye hai — isay import mat
+      karein, seedha globals.css ke end mein chipka dein.)
+
+      Kuch mat hatayein — har hissa kisi na kisi naye component ke
+      liye zaroori hai. Har block ke upar likha hai ke kis file ke
+      liye hai.
+   ══════════════════════════════════════════════════════════════════ */
+
+
+/* ──────────────────────────────────────────────────────────────
+   1. HERO KE GHOOMTAY GEARS
+      file: components/home/HeroSection.jsx
+   ────────────────────────────────────────────────────────────── */
+
+@keyframes paz-spin-cw {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes paz-spin-ccw {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(-360deg); }
+}
+
+/* Raftaar jaan boojh kar bohat dheemi hai (40s / 28s ek chakkar).
+   Tez ghoomta gear cartoon lagta hai aur nazar kheenchta hai; dheema
+   ghoomta gear background ka hissa lagta hai — bas mehsoos hota hai
+   ke cheez zinda hai. */
+.paz-gear-cw  { animation: paz-spin-cw  40s linear infinite; transform-origin: 50% 50%; }
+.paz-gear-ccw { animation: paz-spin-ccw 28s linear infinite; transform-origin: 50% 50%; }
+
+/* Light theme mein safed background par gold gear text ke upar chhaa
+   jata tha — is liye light mein opacity kam, dark mein zyada. */
+.paz-hero-gear { opacity: 0.30; }
+[data-theme="dark"] .paz-hero-gear { opacity: 0.42; }
+
+/* Hero ka grid texture — light mein kaali lakeerein, dark mein safed.
+   `currentColor` is liye use kiya taake ek hi background-image do
+   themes mein alag rang le le. */
+.paz-hero-grid { color: #000; opacity: 0.035; }
+[data-theme="dark"] .paz-hero-grid { color: #fff; opacity: 0.04; }
+
+/* "Drive Your Future" wali script likhai */
+.paz-script {
+  font-family: 'Brush Script MT', 'Segoe Script', 'Lucida Handwriting', cursive;
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.05;
+  letter-spacing: 0.01em;
+}
+
+/* Jin logon ne apne system mein animation band ki hui hai (accessibility
+   setting), un ke liye gear rukk jaye — ye web ka standard adab hai. */
+@media (prefers-reduced-motion: reduce) {
+  .paz-gear-cw, .paz-gear-ccw { animation: none; }
+}
+
+
+/* ──────────────────────────────────────────────────────────────
+   2. BLOG KI IMAGES — resize + alignment
+      files: components/admin/RichTextEditor.jsx  (editor ke andar)
+             components/blog/BlogContent.jsx      (published page par)
+
+      ⚠️ Ye hissa hatana mat — is ke bagair image ka drag handle
+         nazar nahi aayega aur alignment kaam nahi karegi.
+   ────────────────────────────────────────────────────────────── */
+
+/* ── Editor ke andar ka wrapper ── */
+.paz-img-wrap {
+  position: relative;
+  display: block;
+  max-width: 100%;
+  margin: 1.5rem auto;
+  line-height: 0;          /* image ke neeche ki khali line hatane ke liye */
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.paz-img-wrap > img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 0.75rem;
+}
+
+.paz-img-wrap[data-align="left"]   { margin-left: 0;    margin-right: auto; }
+.paz-img-wrap[data-align="center"] { margin-left: auto; margin-right: auto; }
+.paz-img-wrap[data-align="right"]  { margin-left: auto; margin-right: 0; }
+
+/* Selected image — gold outline */
+.paz-img-wrap.is-selected {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ── Drag handle ── daayen neeche kona */
+.paz-img-handle {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  background: var(--accent);
+  border: 2px solid #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+  cursor: nwse-resize;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  z-index: 5;
+}
+
+.paz-img-wrap:hover .paz-img-handle,
+.paz-img-wrap.is-selected .paz-img-handle {
+  opacity: 1;
+}
+
+/* ── Published blog page par ──
+   Editor HTML mein style="width:50%" aur data-align="right" likh deta
+   hai. Yahan sirf usay maan-na hai.
+
+   `.blog-prose` wo class hai jo components/blog/BlogContent.jsx apne
+   wrapper par lagata hai — main ne aap ki file kholi thi, wahi naam
+   hai. Agar kabhi badlein to yahan bhi badalna hoga.
+
+   ⚠️ BACKEND PATCH BHI LAZMI HAI: sanitize-html by default
+      `data-align` uda deta hai. src/services/blog.service.js mein wo
+      ek line badalni hai — tafseel README mein hai. Us patch ke bagair
+      editor mein alignment dikhegi lekin published page par nahi. */
+.blog-prose img[data-align="left"]   { display: block; margin-left: 0;    margin-right: auto; }
+.blog-prose img[data-align="center"] { display: block; margin-left: auto; margin-right: auto; }
+.blog-prose img[data-align="right"]  { display: block; margin-left: auto; margin-right: 0; }
+
+.blog-prose img,
+.blog-editor-body img {
+  height: auto;
+  max-width: 100%;
+  border-radius: 0.75rem;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+
+/* ──────────────────────────────────────────────────────────────
+   3. BLOG CARD KA HOVER
+      file: components/blog/BlogCard.jsx
+   ────────────────────────────────────────────────────────────── */
+
+/* Sirf 2px uthta hai — bouncy cartoon animation nahi.
+   Shadow do parton mein: halka chaurha + gehra tang = realistic. */
+.paz-blog-card:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.08),
+    0 20px 40px -18px rgba(0, 0, 0, 0.30);
+  border-color: rgba(232, 184, 75, 0.35);
+}
+
+[data-theme="dark"] .paz-blog-card:hover {
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.4),
+    0 20px 44px -18px rgba(0, 0, 0, 0.7);
+}
+
+
+/* ──────────────────────────────────────────────────────────────
+   4. PRIVACY POLICY KA SIDEBAR
+      file: app/(main)/privacy-policy/page.jsx
+
+      Ye ek SERVER component hai, is liye us ke andar <style jsx>
+      nahi likh sakte — hover rule yahan rakhna zaroori tha.
+   ────────────────────────────────────────────────────────────── */
+
+.paz-toc:hover { color: var(--accent) !important; }
+
+
+/* ──────────────────────────────────────────────────────────────
+   5. HAR JAGA SCROLLBAR CHHUPANE KE LIYE (utility)
+      files: BrowseByTabs.jsx, FeaturedCarsSection.jsx
+      (dono ne apni styled-jsx mein bhi rakha hua hai — ye global
+       backup hai taake kisi bhi naye horizontal row mein bas
+       class lagani pare.)
+   ────────────────────────────────────────────────────────────── */
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+/* ══════════════════════════════════════════════════════════════════
+   ✅ PHASE 3 ADDITIONS
+
+   Ye poora block copy kar ke apni maujooda frontend/app/globals.css
+   ke SAB SE AAKHIR mein paste kar dein — Phase 1 wale block ke baad.
+
+   ⚠️ Phase 1 ka block PEHLE lagana zaroori hai (gears, blog image
+      handle, .paz-blog-card, .paz-toc). Ye us ke upar banta hai.
+   ══════════════════════════════════════════════════════════════════ */
+
+
+/* ──────────────────────────────────────────────────────────────
+   1. MOBILE BOTTOM NAV KI JAGAH
+      file: components/layout/FloatingPostButton.jsx
+
+      Bar `position: fixed` hai, is liye wo page ke aakhri hisse ke
+      UPAR chhap jati hai — footer ke links aur "Sab dekhein" jaise
+      buttons uske neeche dab jate hain aur click hi nahi hote.
+
+      Jis bhi page par bar dikhti hai, us ke sab se bahar wale div
+      par `paz-has-bottom-nav` class laga dein (homepage aur footer
+      mein already lagi hui hai).
+   ────────────────────────────────────────────────────────────── */
+
+@media (max-width: 639px) {
+  .paz-has-bottom-nav {
+    padding-bottom: calc(66px + env(safe-area-inset-bottom));
+  }
+}
+
+/* Sheet upar se neeche halka sa aata hai — koi bounce nahi */
+@keyframes paz-sheet-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.paz-post-sheet {
+  animation: paz-sheet-in 0.18s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .paz-post-sheet { animation: none; }
+}
+
+
+/* ──────────────────────────────────────────────────────────────
+   2. NAVBAR AUR HERO KI THEME EK JAISI
+      files: components/layout/Navbar.jsx (koi code change nahi)
+             components/home/HeroSection.jsx
+
+      ══ AAP NE JO KAHA ══
+      "Menu section aur banner ki theme ek jaisi honi chahiye — jab
+       light ho to menu section mein bhi hero banner jaisa light
+       orange shade aaye, aur dark mein waisi hi fixed dark orange
+       shades."
+
+      ══ MASLA ══
+      Navbar `--bg-header` use karta hai:
+          light → #ffffff (bilkul safed)
+          dark  → #060606 (bilkul kaala)
+      Aur hero `--bg-hero` use karta hai jo dono mein warm orange/amber
+      gradient hai. Is liye navbar hamesha hero se katta hua lagta tha —
+      ek safed patti, neeche orange banner.
+
+      ══ HAL ══
+      Sirf token ki value badal rahe hain — Navbar.jsx ko haath lagane
+      ki zarurat nahi. Ab header hero ke pehle stop se milta julta warm
+      rang leta hai, is liye dono seamlessly juṛ jate hain.
+   ────────────────────────────────────────────────────────────── */
+
+:root,
+[data-theme="light"] {
+  /* Hero ka pehla stop #ffffff hai aur doosra #fff9f0 — header ab unhi
+     ke darmiyan ka warm cream hai. Itna halka ke text kaala hi parha
+     jata hai, lekin itna warm ke hero ke saath ghul-mil jata hai. */
+  --bg-header: #fffaf2;
+  /* Header ke neeche ki lakeer bhi warm — grey lakeer orange banner par
+     bhaddi lagti thi */
+  --border-header: rgba(232, 184, 75, 0.28);
+}
+
+[data-theme="dark"] {
+  /* Dark mein hero ka pehla stop #060606 hai. Header usay ek halka warm
+     tint deta hai (kaale mein bhoora sa) — bilkul flat kaala nahi, taake
+     hero ke #1c1a12 wale warm hisse se rishta bane. */
+  --bg-header: #0a0806;
+  --border-header: rgba(232, 184, 75, 0.16);
+}
+
+/* Navbar ki border ab warm token se. Agar aap ka Navbar
+   `border-bottom` inline style se laga raha ho to wo ye override nahi
+   karega — us soorat mein Navbar.jsx mein `var(--border-color)` ko
+   `var(--border-header)` se badal dein. */
+header,
+nav[data-paz-nav],
+.paz-navbar {
+  border-bottom-color: var(--border-header) !important;
+}
+
+
+/* ──────────────────────────────────────────────────────────────
+   3. HERO KA TEXT — light theme mein zyada gehra
+      file: components/home/HeroSection.jsx
+
+      ══ AAP NE JO KAHA ══
+      "Main page ke card ko bhi set karo, hero banner mein writing
+       thori light hai light theme mein — us ko thora sa dark kar do."
+
+      ══ WAJAH ══
+      Hero ka subtitle aur eyebrow `--text-secondary` (#5a5a5a) use
+      karte hain. Safed page par wo theek parha jata hai, lekin hero ke
+      cream/amber gradient par contrast gir jata hai aur text feeka lagta
+      hai.
+
+      ══ HAL ══
+      Sirf hero ke andar text ke tokens gehre kar diye. Baqi site par
+      koi asar nahi — kyunke ye rule `.paz-hero` ke andar hi chalta hai.
+   ────────────────────────────────────────────────────────────── */
+
+[data-theme="light"] .paz-hero {
+  --text-secondary: #3d3630;  /* pehle #5a5a5a — ab kaafi gehra */
+  --text-muted: #6b6259;      /* pehle #8a8a8a */
+}
+
+/* Headline par halka sa text-shadow — gradient par harf ka kinara
+   saaf katta hai. Itna halka ke shadow alag se nazar na aaye. */
+[data-theme="light"] .paz-hero h1 {
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+
+/* Dark mein ulta masla tha — text thora zyada chamakdaar tha */
+[data-theme="dark"] .paz-hero {
+  --text-secondary: #c4c4c4;
+}
+
+
+/* ──────────────────────────────────────────────────────────────
+   4. BLOG KI IMAGE — LEFT / RIGHT
+      files: components/admin/RichTextEditor.jsx (Phase 1)
+             components/blog/BlogContent.jsx
+
+      ⚠️ AAP NE KAHA: "image ko left right karne ka option nahi hai."
+
+      Option Phase 1 ki RichTextEditor.jsx mein MOJOOD hai — image par
+      click karte hi toolbar ke neeche patti khulti hai jis mein
+      left/center/right ke teen button hain. Agar wo nazar nahi aa rahi
+      to teen mein se ek wajah hai:
+
+        (a) Phase 1 ki RichTextEditor.jsx apply nahi hui
+        (b) Phase 1 ka CSS block globals.css mein paste nahi hua
+        (c) Backend ka sanitizer patch nahi laga (data-align ud jata hai)
+
+      Teenon ka tareeqa README mein likha hai.
+
+      Neeche ka block us se aage ka kaam karta hai: image ke SAATH text
+      lipat kar aaye (float), jo asal "left/right" ka faida hai — warna
+      image left ho kar bhi apni poori line ghairti hai.
+   ────────────────────────────────────────────────────────────── */
+
+/* Editor ke andar */
+.paz-img-wrap[data-align="left"]  { float: left;  margin-right: 1.5rem; }
+.paz-img-wrap[data-align="right"] { float: right; margin-left: 1.5rem; }
+.paz-img-wrap[data-align="center"] { float: none; }
+
+/* Published page par */
+.blog-prose img[data-align="left"] {
+  float: left;
+  margin: 0.5rem 1.5rem 1rem 0;
+}
+
+.blog-prose img[data-align="right"] {
+  float: right;
+  margin: 0.5rem 0 1rem 1.5rem;
+}
+
+/* Float ke baad agla heading/paragraph image ke neeche se shuru ho,
+   uske bagal mein ghus na jaye */
+.blog-prose h2,
+.blog-prose h3,
+.blog-prose hr,
+.blog-editor-body h2,
+.blog-editor-body h3 {
+  clear: both;
+}
+
+/* Mobile par float ka koi faida nahi — 40% chaurhi image ke bagal
+   mein do lafz aate hain aur parhna mushkil ho jata hai. Is liye
+   chhoti screen par har image poori chaurai leti hai. */
+@media (max-width: 640px) {
+  .blog-prose img[data-align="left"],
+  .blog-prose img[data-align="right"],
+  .paz-img-wrap[data-align="left"],
+  .paz-img-wrap[data-align="right"] {
+    float: none !important;
+    width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+}
+
+
+/* ──────────────────────────────────────────────────────────────
+   5. CONTACT PAGE aur BROWSE SECTION ke hover
+      files: app/(main)/contact/page.jsx  (server component — is ke
+             andar <style jsx> nahi lag sakta, is liye yahan)
+             components/home/BrowseByTabs.jsx
+   ────────────────────────────────────────────────────────────── */
+
+.paz-social-row:hover {
+  border-color: var(--accent) !important;
+  background: var(--bg-surface-alt);
+}
+
+.paz-browse-row:hover {
+  background: var(--bg-surface-alt);
+  color: var(--text-primary) !important;
+}
+
+.paz-browse-card:hover {
+  border-color: rgba(232, 184, 75, 0.5) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 26px -14px rgba(0, 0, 0, 0.28);
+}
+
+[data-theme="dark"] .paz-browse-card:hover {
+  box-shadow: 0 12px 26px -14px rgba(0, 0, 0, 0.65);
+}
+
+/* Contact page ka FAQ — browser ka default triangle hata do */
+details > summary::-webkit-details-marker { display: none; }
+details > summary { list-style: none; }
+/* ============================================================
+   globals.css mein IN LINES KO PASTE KARO — end mein
+   ============================================================ */
+
+/* ── Urdu Font Fallback ───────────────────────────────────────
+   Agar layout.tsx mein next/font/google import kaam na kare
+   to neeche wala @import uncomment karo:
+
+   @import url('https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap');
+*/
+
+/* ── Urdu (Nastaliq) typography ────────────────────────────── */
+.lang-ur,
+.lang-ur p,
+.lang-ur h1,
+.lang-ur h2,
+.lang-ur h3,
+.lang-ur h4,
+.lang-ur h5,
+.lang-ur h6,
+.lang-ur span,
+.lang-ur li,
+.lang-ur a,
+.lang-ur button,
+.lang-ur label,
+.lang-ur input,
+.lang-ur textarea {
+  font-family: var(--font-nastaliq), 'Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq', serif;
+  line-height: 2.4;     /* Nastaliq ko zyada line height chahiye */
+  letter-spacing: 0;
+}
+
+/* Headings mein thoda kam line height theek lagti hai */
+.lang-ur h1,
+.lang-ur h2,
+.lang-ur h3 {
+  line-height: 2;
+}
+
+/* ── RTL layout helpers ────────────────────────────────────── */
+
+/* Arrows / Chevrons jo LTR mein right jaate hain, RTL mein ulat jao */
+[dir='rtl'] .rtl-flip {
+  transform: scaleX(-1);
+}
+
+/* Tailwind pe RTL ke liye — yeh jo elements LTR mein left pe hain */
+[dir='rtl'] .ltr-only { display: none !important; }
+[dir='ltr'] .rtl-only { display: none !important; }
+
+/* Scroll bars RTL mein left pe */
+[dir='rtl'] * {
+  scrollbar-width: thin;
+}
+
+/* Input placeholder direction */
+[dir='rtl'] input::placeholder,
+[dir='rtl'] textarea::placeholder {
+  text-align: right;
+}
+
+/* ── Transition for smooth language switch ─────────────────── */
+html {
+  transition: none; /* Flash rokne ke liye transition OFF */
+}
