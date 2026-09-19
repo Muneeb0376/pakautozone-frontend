@@ -12,7 +12,7 @@ import { getSocket, connectSocket } from '@/lib/socket';
 import { api } from '@/lib/api';
 import Logo from './Logo';
 import ProfileDropdown from './ProfileDropdown';
-import AuthModal from '@/components/auth/AuthModal';
+import AuthModal, { preloadGoogleSignIn } from '@/components/auth/AuthModal';
 import WishlistButton from './WishlistButton';
 
 export default function Navbar() {
@@ -55,6 +55,12 @@ export default function Navbar() {
   useEffect(() => {
     setIsClient(true);
   }, []);
+
+  // ✅ SPEED: guest user ke liye Google login ki script pehle se load kar lo,
+  // taake Sign In dabate hi modal foran tayar ho.
+  useEffect(() => {
+    if (_hasHydrated && !isAuthenticated) preloadGoogleSignIn();
+  }, [_hasHydrated, isAuthenticated]);
 
   useEffect(() => {
     const onClick = (e) => {

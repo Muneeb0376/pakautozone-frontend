@@ -66,6 +66,44 @@ import { useLang } from '@/lib/i18nContext';
 // ✅ FIX: NEXT_PUBLIC_ prefix zaroori hai — warna browser mein undefined aata hai
 const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 
+/* ✅ SPEED: Google ki script ek hi baar, ek hi jagah se load hoti hai.
+   Navbar guest user ke liye page load ke baad khaali waqt mein isay pehle se
+   load kar leta hai, taake "Sign In" dabate hi Google button tayar ho aur
+   click ke waqt script download/parse ka bojh na pade. */
+let googleScriptPromise = null;
+
+function loadGoogleScript() {
+  if (typeof window === 'undefined') return Promise.resolve(false);
+  if (window.google?.accounts?.id) return Promise.resolve(true);
+  if (googleScriptPromise) return googleScriptPromise;
+
+  googleScriptPromise = new Promise((resolve) => {
+    const fail = () => { googleScriptPromise = null; resolve(false); };
+    const existing = document.getElementById('google-identity-script');
+    if (existing) {
+      existing.addEventListener('load', () => resolve(true));
+      existing.addEventListener('error', fail);
+      return;
+    }
+    const s = document.createElement('script');
+    s.id = 'google-identity-script';
+    s.src = 'https://accounts.google.com/gsi/client';
+    s.async = true;
+    s.defer = true;
+    s.onload = () => resolve(true);
+    s.onerror = () => { s.remove(); fail(); };
+    (document.body || document.head).appendChild(s);
+  });
+  return googleScriptPromise;
+}
+
+export function preloadGoogleSignIn() {
+  if (typeof window === 'undefined' || !GOOGLE_CLIENT_ID) return;
+  const warm = () => { loadGoogleScript(); };
+  if ('requestIdleCallback' in window) window.requestIdleCallback(warm, { timeout: 3000 });
+  else setTimeout(warm, 1500);
+}
+
 /* WhatsApp/Instagram ke andar wala browser Google Sign-In block karta hai */
 function isInAppBrowser() {
   if (typeof navigator === 'undefined') return false;
@@ -226,22 +264,9 @@ export default function AuthModal({ onClose, message, redirectAfter }) {
       });
     };
 
-    if (window.google?.accounts?.id) { render(); return undefined; }
-
-    const existing = document.getElementById('google-identity-script');
-    if (existing) {
-      existing.addEventListener('load', render);
-      return () => existing.removeEventListener('load', render);
-    }
-
-    const s = document.createElement('script');
-    s.id = 'google-identity-script';
-    s.src = 'https://accounts.google.com/gsi/client';
-    s.async = true;
-    s.defer = true;
-    s.onload = render;
-    document.body.appendChild(s);
-    return undefined;
+    let cancelled = false;
+    loadGoogleScript().then((ok) => { if (ok && !cancelled) render(); });
+    return () => { cancelled = true; };
   }, [tab, method]);
 
   const clickGoogle = () => {
@@ -429,7 +454,7 @@ export default function AuthModal({ onClose, message, redirectAfter }) {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center p-4" style={{ zIndex: 100 }}>
-      <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }} onClick={onClose} />
+      <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.68)' }} onClick={onClose} />
 
       <div
         className="relative w-full max-w-sm rounded-2xl overflow-hidden max-h-[92vh] overflow-y-auto"
