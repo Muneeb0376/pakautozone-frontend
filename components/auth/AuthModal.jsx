@@ -37,6 +37,14 @@
 //    header gold/black, inputs surface, text primary/secondary. Light
 //    aur dark dono theek.
 //
+// 6. "PRODUCTION (VERCEL) PAR GOOGLE BUTTON GAYAB"
+//    Wajah: browser code mein sirf NEXT_PUBLIC_ wale env variables milte
+//    hain. Pehle yahan process.env.GOOGLE_CLIENT_ID tha — wo browser mein
+//    hamesha undefined hota hai, is liye button render hi nahi hota tha.
+//    Ab process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID use hota hai.
+//    GOOGLE_CLIENT_SECRET client code mein kabhi nahi hona chahiye — hata
+//    diya (ye flow use hi nahi karta).
+//
 // ⚠️ PURANE /login AUR /register SAFHAY:
 //    Ye modal hi aap ka asli login hai. Purane standalone safhay
 //    (app/(auth)/login, app/(auth)/register) ab bhi mojood hain aur
@@ -55,6 +63,7 @@ import { useAuthStore } from '@/store/authStore';
 import Logo from '@/components/layout/Logo';
 import { useLang } from '@/lib/i18nContext';
 
+// ✅ FIX: NEXT_PUBLIC_ prefix zaroori hai — warna browser mein undefined aata hai
 const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 
 /* WhatsApp/Instagram ke andar wala browser Google Sign-In block karta hai */

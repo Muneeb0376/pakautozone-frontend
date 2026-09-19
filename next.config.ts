@@ -5,6 +5,11 @@ const BACKEND_ORIGIN =
   process.env.BACKEND_ORIGIN ||
   'https://auto-marketplace-backend-production.up.railway.app';
 
+// NextAuth ke apne endpoints. Yeh Next.js ke andar handle hote hain,
+// backend (Railway) ko nahi jane chahiye.
+const NEXTAUTH_ROUTES =
+  'providers|session|csrf|signin|signout|callback|error|verify-request|_log';
+
 const nextConfig: NextConfig = {
   allowedDevOrigins: [
     'localhost:3000',
@@ -18,13 +23,13 @@ const nextConfig: NextConfig = {
     ],
   },
 
-  // ASAL FIX: /api, /uploads, /socket.io ki har request ko Next.js server
-  // ke zariye seedha backend (localhost:5000) tak proxy karo. Phone/browser
-  // ko backend ka URL kabhi pata nahi chalta — hamesha sirf ngrok domain se
-  // baat karta hai. Isse CORS, mixed-content, aur ngrok-port masla khatam.
+  // /api ki requests backend ko proxy hoti hain, siwaye NextAuth ke endpoints ke.
   async rewrites() {
     return [
-      { source: '/api/:path*', destination: `${BACKEND_ORIGIN}/api/:path*` },
+      {
+        source: `/api/:path((?!auth/(?:${NEXTAUTH_ROUTES})).*)`,
+        destination: `${BACKEND_ORIGIN}/api/:path`,
+      },
       { source: '/uploads/:path*', destination: `${BACKEND_ORIGIN}/uploads/:path*` },
       { source: '/socket.io/:path*', destination: `${BACKEND_ORIGIN}/socket.io/:path*` },
     ];

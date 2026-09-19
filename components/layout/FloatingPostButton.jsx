@@ -99,7 +99,22 @@ export default function FloatingPostButton() {
   // ⚠️ Signature `getDashboardPath(user, store)` hai — object nahi.
   // Ye function khud tay karta hai ke buyer/seller/dealer/dual-profile
   // user ko kaunsa dashboard dikhana hai.
+  //
+  // ✅ FIX: Jis user ne abhi tak koi seller/showroom profile register
+  // nahi ki, uske liye getDashboardPath() '/dashboard/buyer' (ya kisi
+  // purane hataye hue page) per le jata tha. Ab aisay user ke liye
+  // "Dashboard" bottom-nav button seedha "Sell a Car" page per bhejta
+  // hai. Jaise hi user seller ya showroom register kar leta hai,
+  // isAuthenticated + isSeller/isDealer true ho jate hain aur normal
+  // getDashboardPath() wapas asal dashboard per le jata hai.
+  const isSellerProfile = !!user?.hasSellerProfile || effectiveRole === 'SELLER';
+  const isDealerProfile = hasStore || effectiveRole === 'DEALER';
+  const hasAnyDashboardProfile = isSellerProfile || isDealerProfile || effectiveRole === 'ADMIN';
+
   const dashboardHref = (() => {
+    if (isAuthenticated && !hasAnyDashboardProfile) {
+      return '/dashboard/new-listing'; // "Sell a Car" page
+    }
     try {
       return getDashboardPath(user, store) || '/dashboard';
     } catch {
