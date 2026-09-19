@@ -86,7 +86,7 @@ const YEARS = Array.from({ length: CURRENT_YEAR - MIN_YEAR + 1 }, (_, i) => CURR
 export default function NewListingPage() {
   const { t } = useLang();
   const router = useRouter();
-  const { token, user, isAuthenticated, _hasHydrated } = useAuthStore();
+  const { token, user, isAuthenticated, _hasHydrated, refreshUser } = useAuthStore();
   const fileInputRef = useRef(null);
 
   /* ── Guard ──
@@ -266,6 +266,13 @@ export default function NewListingPage() {
       const data = await res.json();
 
       if (res.ok && data.success) {
+        // ✅ FIX: Backend ab pehli listing par user ko private SELLER bana
+        // deta hai (hasSellerProfile: true) — authStore ko turant sync
+        // karo taake agli dafa Dashboard button click karne par ye
+        // listing form dobara na khule, balke seedha seller dashboard
+        // khule (bina logout/login kiye).
+        await refreshUser();
+
         // ✅ Free quota khatam — modal dikhao, dashboard mat bhejo
         if (data.requiresPayment) {
           setQuota(data.quota || quota);
