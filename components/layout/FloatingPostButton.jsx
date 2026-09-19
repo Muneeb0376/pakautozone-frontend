@@ -113,7 +113,7 @@ export default function FloatingPostButton() {
 
   const dashboardHref = (() => {
     if (isAuthenticated && !hasAnyDashboardProfile) {
-      return '/dashboard/new-listing'; // "Sell a Car" page
+      return BECOME_SELLER_HREF; // "Become a Seller" registration page
     }
     try {
       return getDashboardPath(user, store) || '/dashboard';
