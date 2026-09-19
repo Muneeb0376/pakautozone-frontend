@@ -64,14 +64,19 @@ function FeaturedCard({ car, onOpen }) {
       }}
     >
       {/* ── Image ── */}
-      <div className="relative aspect-[16/10] overflow-hidden" style={{ background: 'var(--skeleton-bg)' }}>
+      {/* ✅ FIX: car poori dikhe — image ab `object-contain` hai (bilkul "All Cars" card jaisa),
+          `object-cover` isay zoom karke kaat deta tha. Background bhi wahi gradient hai. */}
+      <div
+        className="relative aspect-[16/10] overflow-hidden"
+        style={{ background: 'linear-gradient(135deg, var(--bg-surface-alt), var(--card-bg))' }}
+      >
         {img ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={img}
             alt={carTitle(car)}
             loading="lazy"
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
