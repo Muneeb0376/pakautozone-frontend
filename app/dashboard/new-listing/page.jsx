@@ -89,16 +89,21 @@ export default function NewListingPage() {
   const { token, user, isAuthenticated, _hasHydrated } = useAuthStore();
   const fileInputRef = useRef(null);
 
-  /* ── Guard ── */
+  /* ── Guard ──
+     ✅ FIX: Pehle yahan `user.role` check karke turant (page load hote
+     hi) non-seller/dealer ko '/dashboard/become-seller' par redirect
+     kar diya jata tha — is wajah se pehle listing form render hota tha,
+     phir 1 second baad ye useEffect fire ho kar dobara become-seller
+     form khol deta tha (do forms ek sath dikhte thay).
+     Ab sirf authentication check yahan hai — seller-onboarding ka faisla
+     submit time par backend khud karta hai (`requiresSellerOnboarding`,
+     neeche handleSubmit mein), jo sahi jagah hai kyunke tab tak user
+     shayad already register ho chuka ho ya form bhar kar seller ban
+     jaye. */
   useEffect(() => {
     if (!_hasHydrated) return;
     if (!isAuthenticated || !user) {
       router.replace('/login?redirect=/dashboard/new-listing');
-      return;
-    }
-    const role = user.role?.toUpperCase();
-    if (role !== 'SELLER' && role !== 'DEALER') {
-      router.replace('/dashboard/become-seller');
     }
   }, [_hasHydrated, isAuthenticated, user, router]);
 
