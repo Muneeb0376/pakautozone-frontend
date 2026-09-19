@@ -55,11 +55,51 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, ArrowLeftRight, ArrowRight, ShieldCheck, Car, Cog, RefreshCw } from 'lucide-react';
+import {
+  Search, ArrowLeftRight, ArrowRight, ShieldCheck, Car, Cog, RefreshCw,
+  MapPin, Gauge, Store, Sparkles, Tag,
+} from 'lucide-react';
 import { useLang } from '@/lib/i18nContext';
 import { PK_CITIES } from '@/components/home/browseData';
 
 const HERO_CAR = '/hero-car.png';
+
+/* ─────────────────────────────────────────────────────────────
+   ⚠️ SIRF MOBILE (sm se neeche) ke liye naye hisse.
+   Desktop/tablet ka hero neeche waisa hi hai jaisa pehle tha.
+
+   Chip labels teeno zabanon mein yahin likhe hain (dictionary mein
+   koi nayi key nahi chahiye), aur `lang` se chunay jate hain.
+   ───────────────────────────────────────────────────────────── */
+const MOBILE_LABELS = {
+  en:    { newCars: 'New Cars',   usedCars: 'Used Cars',           tradeIn: 'Trade In',  dealers: 'Showrooms', aiFinder: 'AI Finder',          priceCheck: 'Price Check' },
+  roman: { newCars: 'New Cars',   usedCars: 'Used Cars',           tradeIn: 'Trade In',  dealers: 'Showrooms', aiFinder: 'AI Finder',          priceCheck: 'Price Check' },
+  ur:    { newCars: 'نئی گاڑیاں', usedCars: 'استعمال شدہ گاڑیاں', tradeIn: 'ٹریڈ اِن', dealers: 'شو رومز',   aiFinder: 'اے آئی کار فائنڈر', priceCheck: 'قیمت چیک' },
+};
+
+const MOBILE_CHIPS = [
+  { key: 'newCars',    Icon: Car,            href: '/cars?condition=new' },
+  { key: 'usedCars',   Icon: Gauge,          href: '/cars?condition=used' },
+  { key: 'tradeIn',    Icon: ArrowLeftRight, href: '/cars?exchange=true' },
+  { key: 'dealers',    Icon: Store,          href: '/stores' },
+  { key: 'aiFinder',   Icon: Sparkles,       href: '/ai-recommend' },
+  { key: 'priceCheck', Icon: Tag,            href: '/price-check' },
+];
+
+/* Mobile par trust strip ka chhota khaana — sirf icon + ek chhota title */
+function MobileTrustItem({ Icon, title, last }) {
+  return (
+    <div
+      className="flex flex-col items-center text-center gap-1 px-1 py-2.5"
+      style={{ borderInlineEnd: last ? 'none' : '1px solid var(--border-color)' }}
+    >
+      <Icon size={19} strokeWidth={1.7} style={{ color: 'var(--accent)' }} className="shrink-0" />
+      <p className="text-[10px] font-semibold leading-tight" style={{ color: 'var(--text-secondary)' }}>
+        {title}
+      </p>
+    </div>
+  );
+}
 
 /* Missing i18n key par key ka naam dikhne se behtar hai saaf angrezi text */
 const tx = (t, key, fallback) => {
@@ -157,7 +197,8 @@ function TrustItem({ Icon, title, sub, last }) {
 
 export default function HeroSection() {
   const router = useRouter();
-  const { t } = useLang();
+  const { t, lang } = useLang();
+  const M = MOBILE_LABELS[lang] || MOBILE_LABELS.en;
 
   const [search, setSearch] = useState('');
   const [city, setCity] = useState('');
@@ -171,8 +212,148 @@ export default function HeroSection() {
   };
 
   return (
+    <>
+      {/* ═══════════════════════════════════════════════════════════
+          📱 MOBILE HERO (sm se neeche) — halka, saaf, jaldi access
+          • gears/grid/glow hata diye, height kam
+          • ek search card: naam + shehar + Search
+          • chips ki ek line: aik tap mein aham safhay
+          • neeche 4 chhote trust khaane (bade cards nahi)
+          ═══════════════════════════════════════════════════════════ */}
+      <section
+        className="sm:hidden relative left-1/2 right-1/2 -mx-[50vw] w-screen overflow-hidden"
+        style={{ background: 'var(--bg-hero)' }}
+      >
+        {/* ⚙️ Ghoomtay gears — text ke peeche, sirf mobile par.
+            Bara gear clockwise, chhota us se juda hua anti-clockwise.
+            teeth 18 / 10 alag rakhe hain (desktop 16/14/12 use karta hai) taake
+            SVG gradient ids takrayen nahi. `end-` ki wajah se Urdu (RTL) mein ye
+            khud doosri taraf aa jate hain, text ke muqabil. */}
+        <Gear
+          teeth={18}
+          className="paz-hero-gear paz-gear-cw pointer-events-none absolute block w-36 h-36 -end-9 -top-9"
+          style={{ opacity: 0.4 }}
+        />
+        <Gear
+          teeth={10}
+          className="paz-hero-gear paz-gear-ccw pointer-events-none absolute block w-16 h-16 end-[66px] top-[66px]"
+          style={{ opacity: 0.4 }}
+        />
+
+        <div className="relative z-10 px-4 pt-5 pb-4">
+          <h1
+            className="text-[1.6rem] leading-[1.15] font-black tracking-tight text-start"
+            style={{ color: 'var(--text-primary)' }}
+          >
+            {tx(t, 'home.heroTitle', 'Your Dream Car')}{' '}
+            <span style={{ color: 'var(--accent)' }}>
+              {tx(t, 'home.heroTitleAccent', 'Is Right Here')}
+            </span>
+          </h1>
+
+          <p className="mt-1.5 text-[12.5px] leading-snug text-start" style={{ color: 'var(--text-muted)' }}>
+            {tx(t, 'home.eyebrow', 'Verified sellers across Pakistan — all in one place')}
+          </p>
+
+          {/* ── Search card ── */}
+          <div
+            className="mt-4 rounded-2xl p-2.5 space-y-2"
+            style={{
+              background: 'var(--bg-header)',
+              border: '1px solid var(--border-color)',
+              boxShadow: '0 14px 30px -18px rgba(0,0,0,0.45)',
+            }}
+          >
+            <div
+              className="flex items-center gap-2.5 rounded-xl px-3"
+              style={{ background: 'var(--bg-surface-alt)', border: '1px solid var(--border-color)' }}
+            >
+              <Search size={17} className="shrink-0" style={{ color: 'var(--text-muted)' }} />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                placeholder={tx(t, 'home.searchPlaceholder', 'Search by car name or model...')}
+                className="flex-1 min-w-0 bg-transparent h-11 text-base font-medium focus:outline-none placeholder:text-[color:var(--text-muted)]"
+                style={{ color: 'var(--text-primary)' }}
+              />
+            </div>
+
+            <div className="flex items-center gap-2">
+              <div
+                className="flex items-center gap-2 flex-1 min-w-0 rounded-xl px-3"
+                style={{ background: 'var(--bg-surface-alt)', border: '1px solid var(--border-color)' }}
+              >
+                <MapPin size={16} className="shrink-0" style={{ color: 'var(--accent)' }} />
+                <select
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  aria-label={tx(t, 'common.city', 'City')}
+                  className="flex-1 min-w-0 bg-transparent h-11 text-base font-medium focus:outline-none appearance-none cursor-pointer"
+                  style={{ color: city ? 'var(--text-primary)' : 'var(--text-muted)' }}
+                >
+                  <option value="">{tx(t, 'common.city', 'City')}</option>
+                  {PK_CITIES.map((c) => (
+                    <option key={c} value={c} style={{ color: '#161616' }}>{c}</option>
+                  ))}
+                </select>
+              </div>
+
+              <button
+                onClick={handleSearch}
+                className="shrink-0 h-[46px] px-5 rounded-xl text-sm font-bold inline-flex items-center justify-center gap-2 active:scale-95 transition-transform"
+                style={{
+                  background: 'var(--accent)',
+                  color: 'var(--accent-text)',
+                  boxShadow: '0 6px 16px -6px rgba(232,184,75,0.6), inset 0 1px 0 rgba(255,255,255,0.35)',
+                }}
+              >
+                <Search size={16} strokeWidth={2.5} />
+                {tx(t, 'home.search', 'Search')}
+              </button>
+            </div>
+          </div>
+
+          {/* ── Quick access chips (side scroll) ── */}
+          <div
+            className="mt-3 -mx-4 px-4 flex gap-2 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden"
+            style={{ scrollbarWidth: 'none' }}
+          >
+            {MOBILE_CHIPS.map(({ key, Icon, href }) => (
+              <button
+                key={key}
+                onClick={() => router.push(href)}
+                className="shrink-0 h-9 ps-3 pe-3.5 rounded-full inline-flex items-center gap-1.5 text-[12.5px] font-semibold whitespace-nowrap active:scale-95 transition-transform"
+                style={{
+                  background: 'var(--bg-header)',
+                  border: '1px solid var(--border-color)',
+                  color: 'var(--text-primary)',
+                }}
+              >
+                <Icon size={14} strokeWidth={2} style={{ color: 'var(--accent)' }} />
+                {M[key]}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* ── Compact trust strip ── */}
+        <div style={{ borderTop: '1px solid var(--border-color)', background: 'rgba(0,0,0,0.04)' }}>
+          <div className="grid grid-cols-4">
+            <MobileTrustItem Icon={ShieldCheck} title={tx(t, 'home.verifiedShowrooms', 'Verified Showrooms')} />
+            <MobileTrustItem Icon={Car} title={tx(t, 'home.newUsedCars', 'New and Used Cars')} />
+            <MobileTrustItem Icon={Cog} title={tx(t, 'home.genuineParts', 'Genuine Spare Parts')} />
+            <MobileTrustItem Icon={RefreshCw} title={tx(t, 'home.easyTradeIn', 'Easy Trade-In')} last />
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════
+          🖥️ DESKTOP / TABLET HERO — bilkul pehle jaisa (sirf `hidden sm:block` laga hai)
+          ═══════════════════════════════════════════════════════════ */}
     <section
-      className="paz-hero relative left-1/2 right-1/2 -mx-[50vw] w-screen overflow-hidden"
+      className="hidden sm:block paz-hero relative left-1/2 right-1/2 -mx-[50vw] w-screen overflow-hidden"
       style={{ background: 'var(--bg-hero)' }}
     >
       {/* ─── Halka grid texture — depth ke liye, nazar mein na aaye ─── */}
@@ -398,5 +579,6 @@ export default function HeroSection() {
         .hero-in { appearance: none; }
       `}</style>
     </section>
+    </>
   );
 }
