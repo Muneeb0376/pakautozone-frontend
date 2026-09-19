@@ -528,15 +528,7 @@ export default function AuthModal({ onClose, message, redirectAfter }) {
                 </p>
               )}
 
-              <button
-                type="button"
-                onClick={() => switchMethod('phone')}
-                className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl text-sm font-bold transition-colors"
-                style={{ background: 'var(--bg-surface-alt)', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }}
-              >
-                <Phone size={16} style={{ color: 'var(--accent)' }} />
-                {tab === 'signup' ? t('auth.phoneSignUp2') : t('auth.phoneSignIn2')}
-              </button>
+              {/* Phone login button abhi hidden hai (WhatsApp OTP baad mein). Wapas lane ke liye yahan switchMethod('phone') wala button dobara lagana hai. */}
 
               <Divider text={t('auth.orEmail')} />
 
