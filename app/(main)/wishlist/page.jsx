@@ -54,13 +54,34 @@ function CarCard({ car, onRemove }) {
       style={{ background: 'var(--card-bg)', borderColor: 'var(--border-color)' }}
     >
       {/* Image */}
+      {/* ✅ FIX: Tailwind classes (aspect-[16/10], absolute, inset-0, object-cover)
+          purge/JIT config ki wajah se render nahi ho rahi thin — 100% inline styles
+          use kiye (same pattern as CarsGridSection & FeaturedCarsSection).
+          object-cover → object-contain taake poori car dikhe, zoom na ho. */}
       <Link href={`/cars/${car.id}`} className="block">
-        <div className="relative aspect-[16/10] overflow-hidden" style={{ background: 'var(--bg-surface-alt)' }}>
+        <div
+          style={{
+            position: 'relative',
+            width: '100%',
+            height: 'clamp(140px, 22vw, 200px)',
+            background: 'var(--bg-surface-alt)',
+            overflow: 'hidden',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
           {displayImage ? (
             <img
               src={displayImage}
               alt={car.title || `${car.brand} ${car.model}`}
-              className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'contain',
+                display: 'block',
+              }}
+              className="group-hover:scale-105 transition-transform duration-500"
               onError={(e) => {
                 e.target.onerror = null;
                 e.target.style.display = 'none';
@@ -69,18 +90,31 @@ function CarCard({ car, onRemove }) {
             />
           ) : null}
           <div
-            className="absolute inset-0 flex-col items-center justify-center gap-1"
-            style={{ display: displayImage ? 'none' : 'flex', background: 'var(--bg-surface-alt)' }}
+            style={{
+              display: displayImage ? 'none' : 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '4px',
+              position: 'absolute',
+              inset: 0,
+              background: 'var(--bg-surface-alt)',
+            }}
           >
-            <span className="text-3xl">🚗</span>
-            <span className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>{t('wishlist.noImage')}</span>
+            <span style={{ fontSize: '28px' }}>🚗</span>
+            <span style={{ fontSize: '11px', fontWeight: 500, color: 'var(--text-muted)' }}>{t('wishlist.noImage')}</span>
           </div>
 
           {/* Condition Badge */}
           {car.condition && (
             <span
-              className="absolute top-2.5 left-2.5 text-[10px] font-bold px-2 py-0.5 rounded-md text-white shadow"
-              style={{ backgroundColor: conditionHex }}
+              style={{
+                position: 'absolute', top: '8px', left: '8px',
+                backgroundColor: conditionHex, color: '#fff',
+                fontSize: '10px', fontWeight: 700,
+                padding: '2px 7px', borderRadius: '6px',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
+              }}
             >
               {conditionLabel}
             </span>
@@ -88,8 +122,17 @@ function CarCard({ car, onRemove }) {
 
           {/* Exchange Badge */}
           {car.isForExchange && (
-            <span className="absolute top-2.5 right-2.5 text-[10px] font-bold px-2 py-0.5 rounded-md text-white shadow"
-              style={{ backgroundColor: '#8b5cf6' }}>{t('car.exchange')}</span>
+            <span
+              style={{
+                position: 'absolute', top: '8px', right: '8px',
+                backgroundColor: '#8b5cf6', color: '#fff',
+                fontSize: '10px', fontWeight: 700,
+                padding: '2px 7px', borderRadius: '6px',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
+              }}
+            >
+              {t('car.exchange')}
+            </span>
           )}
         </div>
       </Link>
@@ -173,13 +216,32 @@ function PartCard({ part, onRemove }) {
       style={{ background: 'var(--card-bg)', borderColor: 'var(--border-color)' }}
     >
       {/* Image */}
+      {/* ✅ FIX: Same inline styles fix as CarCard above — Tailwind purge issue
+          + object-cover → object-contain taake part poora dikhe. */}
       <Link href={`/parts/${part.id}`} className="block">
-        <div className="relative aspect-[16/10] overflow-hidden" style={{ background: 'var(--bg-surface-alt)' }}>
+        <div
+          style={{
+            position: 'relative',
+            width: '100%',
+            height: 'clamp(140px, 22vw, 200px)',
+            background: 'var(--bg-surface-alt)',
+            overflow: 'hidden',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
           {displayImage ? (
             <img
               src={displayImage}
               alt={part.name}
-              className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'contain',
+                display: 'block',
+              }}
+              className="group-hover:scale-105 transition-transform duration-500"
               onError={(e) => {
                 e.target.onerror = null;
                 e.target.style.display = 'none';
@@ -188,18 +250,31 @@ function PartCard({ part, onRemove }) {
             />
           ) : null}
           <div
-            className="absolute inset-0 flex-col items-center justify-center gap-1"
-            style={{ display: displayImage ? 'none' : 'flex', background: 'var(--bg-surface-alt)' }}
+            style={{
+              display: displayImage ? 'none' : 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '4px',
+              position: 'absolute',
+              inset: 0,
+              background: 'var(--bg-surface-alt)',
+            }}
           >
-            <span className="text-3xl">🔧</span>
-            <span className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>{t('wishlist.noImage')}</span>
+            <span style={{ fontSize: '28px' }}>🔧</span>
+            <span style={{ fontSize: '11px', fontWeight: 500, color: 'var(--text-muted)' }}>{t('wishlist.noImage')}</span>
           </div>
 
           {/* Condition Badge */}
           {part.condition && (
             <span
-              className="absolute top-2.5 left-2.5 text-[10px] font-bold px-2 py-0.5 rounded-md text-white shadow"
-              style={{ backgroundColor: condColor }}
+              style={{
+                position: 'absolute', top: '8px', left: '8px',
+                backgroundColor: condColor, color: '#fff',
+                fontSize: '10px', fontWeight: 700,
+                padding: '2px 7px', borderRadius: '6px',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
+              }}
             >
               {part.condition}
             </span>
@@ -208,8 +283,13 @@ function PartCard({ part, onRemove }) {
           {/* Category Badge */}
           {part.category && (
             <span
-              className="absolute bottom-2.5 left-2.5 text-[10px] font-semibold px-2 py-0.5 rounded-md capitalize"
-              style={{ background: 'rgba(0,0,0,0.55)', color: '#fff' }}
+              style={{
+                position: 'absolute', bottom: '8px', left: '8px',
+                background: 'rgba(0,0,0,0.55)', color: '#fff',
+                fontSize: '10px', fontWeight: 600,
+                padding: '2px 7px', borderRadius: '6px',
+                textTransform: 'capitalize',
+              }}
             >
               {part.category}
             </span>
