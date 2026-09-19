@@ -186,6 +186,7 @@ export default function AuthModal({ onClose, message, redirectAfter }) {
   const [resendIn, setResendIn] = useState(0);
 
   const googleHostRef = useRef(null);
+  const googleWrapRef = useRef(null);
   const googleReadyRef = useRef(false);
   const credentialCbRef = useRef();
 
@@ -259,7 +260,7 @@ export default function AuthModal({ onClose, message, redirectAfter }) {
         type: 'standard',
         theme: 'outline',
         size: 'large',
-        width: 320,
+        width: Math.min(400, Math.max(200, Math.round(googleWrapRef.current?.getBoundingClientRect().width || 320))),
         text: tab === 'signup' ? 'signup_with' : 'signin_with',
       });
     };
@@ -269,11 +270,17 @@ export default function AuthModal({ onClose, message, redirectAfter }) {
     return () => { cancelled = true; };
   }, [tab, method]);
 
+  // Asli click ab Google ke apne (nazar na aane wale) button par hota hai jo hamare
+  // button ke upar laga hai. Ye function sirf tab chalta hai jab wo abhi tayar na ho.
   const clickGoogle = () => {
-    const real = googleHostRef.current?.querySelector('div[role="button"], iframe');
-    if (real) { real.click(); return; }
-    if (window.google?.accounts?.id) window.google.accounts.id.prompt();
-    else setError(t('auth.errGoogleLoad'));
+    if (window.google?.accounts?.id) {
+      const real = googleHostRef.current?.querySelector('div[role="button"]');
+      if (real) { real.click(); return; }
+      window.google.accounts.id.prompt();
+    } else {
+      setError(t('auth.errGoogleLoad'));
+      loadGoogleScript();
+    }
   };
 
   /* ═══════════════════════════════════════════════════════════
@@ -526,27 +533,31 @@ export default function AuthModal({ onClose, message, redirectAfter }) {
                 </div>
               )}
 
-              {/* ✅ Google ka asli button — CHHUPA hua.
-                  display:none nahi use kiya kyunke Google chhupe hue button ko
-                  render hi nahi karta; is liye usay screen se bahar bheja hai. */}
-              <div
-                ref={googleHostRef}
-                aria-hidden="true"
-                style={{ position: 'absolute', left: '-9999px', top: 0, width: 320, height: 44, overflow: 'hidden' }}
-              />
-
-              {/* ✅ Hamara ek hi Google button */}
+              {/* ✅ Google button: hamara button neeche (dikhta hai), aur Google ka ASLI
+                  button bilkul uske upar, nazar nahi aata (opacity ~0). Is tarah user
+                  khud asli button dabata hai — desktop par bhi popup block nahi hota,
+                  jabke pehle code se .click() karne par desktop par kuch nahi hota tha. */}
               {GOOGLE_CLIENT_ID ? (
-                <button
-                  type="button"
-                  onClick={clickGoogle}
-                  disabled={loading}
-                  className="w-full flex items-center justify-center gap-3 py-3.5 rounded-xl text-sm font-bold transition-colors disabled:opacity-50"
-                  style={{ background: 'var(--bg-surface-alt)', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }}
-                >
-                  <GoogleIcon />
-                  {tab === 'signup' ? t('auth.googleSignUp') : t('auth.googleSignIn')}
-                </button>
+                <div ref={googleWrapRef} className="relative">
+                  <button
+                    type="button"
+                    onClick={clickGoogle}
+                    disabled={loading}
+                    className="w-full flex items-center justify-center gap-3 py-3.5 rounded-xl text-sm font-bold transition-colors disabled:opacity-50"
+                    style={{ background: 'var(--bg-surface-alt)', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }}
+                  >
+                    <GoogleIcon />
+                    {tab === 'signup' ? t('auth.googleSignUp') : t('auth.googleSignIn')}
+                  </button>
+
+                  <div
+                    aria-hidden="true"
+                    className="absolute inset-0 overflow-hidden rounded-xl"
+                    style={{ opacity: 0.01, zIndex: 2, cursor: 'pointer', pointerEvents: loading ? 'none' : 'auto' }}
+                  >
+                    <div ref={googleHostRef} style={{ width: '100%', transform: 'scaleY(1.25)', transformOrigin: 'top left' }} />
+                  </div>
+                </div>
               ) : (
                 <p className="text-[11px] text-center" style={{ color: 'var(--text-muted)' }}>
                   {t('auth.googleNotConfigured')}
