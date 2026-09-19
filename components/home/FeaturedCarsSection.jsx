@@ -64,11 +64,21 @@ function FeaturedCard({ car, onOpen }) {
       }}
     >
       {/* ── Image ── */}
-      {/* ✅ FIX: car poori dikhe — image ab `object-contain` hai (bilkul "All Cars" card jaisa),
-          `object-cover` isay zoom karke kaat deta tha. Background bhi wahi gradient hai. */}
+      {/* ✅ FIX: Tailwind classes (aspect-[16/10], w-full, h-full, object-contain) purge/JIT
+          config ki wajah se render nahi ho rahi thin — bilkul wahi masla jo CarsGridSection
+          mein tha. Ab image box + object-fit 100% inline style se control hota hai taake
+          guaranteed render ho aur car poori dikhe. */}
       <div
-        className="relative aspect-[16/10] overflow-hidden"
-        style={{ background: 'linear-gradient(135deg, var(--bg-surface-alt), var(--card-bg))' }}
+        style={{
+          position: 'relative',
+          width: '100%',
+          height: 'clamp(140px, 22vw, 200px)',
+          background: 'linear-gradient(135deg, var(--bg-surface-alt), var(--card-bg))',
+          overflow: 'hidden',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
       >
         {img ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -76,10 +86,16 @@ function FeaturedCard({ car, onOpen }) {
             src={img}
             alt={carTitle(car)}
             loading="lazy"
-            className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'contain',
+              display: 'block',
+            }}
+            className="transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center">
+          <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <CarIcon size={34} strokeWidth={1.2} style={{ color: 'var(--text-muted)' }} />
           </div>
         )}
