@@ -104,7 +104,14 @@ export default function DashboardLayout({ children }) {
 
     // ── BUYER ───────────────────────────────────────────────
     if (!isSeller && !isDealer) {
-      const buyerRestricted = ['/seller', '/showroom', '/my-showroom', '/new-listing', '/listings', '/spare-parts', '/analytics'];
+      // ✅ FIX: '/new-listing' ("Sell a Car" page) buyer ke liye ab
+      // restricted NAHI hai — mobile bottom-nav ke "Dashboard" button se
+      // aisay buyer ko seedha isi page par bheja jata hai jisne abhi tak
+      // seller/showroom register nahi kiya. Pehle ye path bhi
+      // buyerRestricted mein tha, is liye layout turant '/dashboard/buyer'
+      // (purana/hataya hua page) par wapas bhej deta tha — is fix ko yahan
+      // override kar raha tha.
+      const buyerRestricted = ['/seller', '/showroom', '/my-showroom', '/listings', '/spare-parts', '/analytics'];
       if (buyerRestricted.some((path) => pathname?.includes(path))) {
         return { status: 'redirect', to: '/dashboard/buyer' };
       }
