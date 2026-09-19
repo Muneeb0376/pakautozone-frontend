@@ -18,6 +18,7 @@ import { motion } from 'framer-motion';
 import { Camera, User, Mail, Phone, MessageCircle, MapPin, CheckCircle2 } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 import { api } from '@/lib/api';
+import { translateApiError } from '@/lib/i18n';
 
 export default function ProfilePage() {
   const { t } = useLang();
@@ -65,7 +66,7 @@ export default function ProfilePage() {
     const file = e.target.files[0];
     if (!file) return;
     if (file.size > 5 * 1024 * 1024) {
-      setError('Image 5MB se chhoti honi chahiye');
+      setError(t('common.imageRequirements'));
       return;
     }
     setAvatarFile(file);
@@ -94,10 +95,10 @@ export default function ProfilePage() {
         setSuccess(true);
         setTimeout(() => setSuccess(false), 3000);
       } else {
-        setError(res?.message || 'Update failed');
+        setError(translateApiError({ message: res?.message || 'Profile update failed' }, t));
       }
     } catch (err) {
-      setError(err?.response?.data?.message || 'Server connection error. Please try again.');
+      setError(translateApiError(err, t));
     } finally {
       setSaving(false);
     }
@@ -228,7 +229,7 @@ export default function ProfilePage() {
             className="w-full py-4 mt-2 font-bold text-white rounded-xl text-sm transition-all"
             style={{ background: 'linear-gradient(to right, #3b82f6, #22d3ee)' }}
           >
-            {saving ? 'Saving...' : 'Save Changes'}
+            {saving ? t('common.saving') : t('common.save')}
           </motion.button>
         </form>
       </motion.div>

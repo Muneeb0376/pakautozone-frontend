@@ -261,12 +261,12 @@ export default function AdminPage() {
         );
         setReplyingTo(null);
         setReplyText('');
-        alert('Reply bhej di gayi ✅');
+        alert(t('common.success'));
       } else {
-        alert(data.message || 'Reply nahi gayi — dobara try karein');
+        alert(data.message || t('common.tryAgain'));
       }
     } catch (err) {
-      alert('Server error');
+      alert(t('common.serverError'));
     } finally {
       setSendingReply(false);
     }

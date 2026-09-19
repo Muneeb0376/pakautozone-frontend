@@ -66,7 +66,7 @@ export default function PublicPartDetailsPage() {
           onClick={() => router.back()}
           className="flex items-center gap-2 text-blue-400 hover:text-blue-300 underline"
         >
-          <ArrowLeft size={16} /> Wapis jayein
+          <ArrowLeft size={16} /> {t('common.back')}
         </button>
       </div>
     );

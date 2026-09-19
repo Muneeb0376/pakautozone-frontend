@@ -54,6 +54,7 @@ import { useLang } from '@/lib/i18nContext';
 import { useState, useEffect, useRef, useMemo, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { getCleanToken } from '@/lib/auth';
+import { translateApiError } from '@/lib/i18n';
 import {
   ArrowLeft, Upload, Loader2, CheckCircle2, AlertTriangle, X, ChevronDown,
   Repeat, Check, Info, Car, SlidersHorizontal, Sparkles, FileText, Images,
@@ -196,7 +197,7 @@ function ExchangeRequestPage() {
   const handleFileChange = (e) => {
     const newFiles = Array.from(e.target.files || []);
     if (files.length + newFiles.length > 5) {
-      setError('Zyada se zyada 5 photos.');
+      setError(t('common.imageRequirements'));
       return;
     }
     setFiles((prev) => [...prev, ...newFiles]);
@@ -225,17 +226,17 @@ function ExchangeRequestPage() {
             <AlertTriangle size={26} style={{ color: '#dc2626' }} />
           </span>
           <p className="font-bold" style={{ color: 'var(--text-primary)' }}>
-            Ye link theek nahi hai
+            {t('exchange.invalidLinkTitle')}
           </p>
           <p className="text-sm mt-1 mb-5" style={{ color: 'var(--text-muted)' }}>
-            Kisi car ki listing se &ldquo;Trade In Karein&rdquo; par click kar ke aayein.
+            {t('exchange.invalidLinkBody')}
           </p>
           <button
             onClick={() => router.back()}
             className="h-11 px-6 rounded-xl text-sm font-bold"
             style={{ background: 'var(--accent)', color: 'var(--accent-text)' }}
           >
-            Wapis jayein
+            {t('common.back')}
           </button>
         </div>
       </Shell>
@@ -258,19 +259,19 @@ function ExchangeRequestPage() {
     setError(null);
 
     if (!form.brand || !form.model) {
-      setError('Brand aur model zaroori hain.');
+      setError(t('common.required'));
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
     if (!form.city) {
-      setError('Apna shehar batana zaroori hai — dealer isi se andaza lagata hai.');
+      setError(t('common.required'));
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
     // ✅ Kam az kam ek photo — bagair tasveer dealer andaza nahi laga
     // sakta ke gaari ki asal haalat kya hai.
     if (files.length === 0) {
-      setError('Kam az kam ek photo lagana zaroori hai.');
+      setError(t('common.required'));
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
@@ -354,12 +355,12 @@ function ExchangeRequestPage() {
         setSubmitted(true);
         setTimeout(() => router.push('/cars'), 3000);
       } else {
-        setError(data.message || 'Exchange request could not be submitted.');
+        setError(translateApiError({ message: data.message || 'Exchange request could not be submitted.' }, t));
         setSubmitting(false);
       }
     } catch (err) {
       console.error('Submission error:', err);
-      setError('Could not connect to the server. Please try again.');
+      setError(translateApiError(err, t));
       setSubmitting(false);
     }
   };
@@ -384,12 +385,10 @@ function ExchangeRequestPage() {
 
             </h1>
             <p className="text-sm mb-6 leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-              The dealer will review your request and contact you shortly. You will also receive a notification.
-
+              {t('exchange.sentBody') || 'The dealer will review your request and contact you shortly. You will also receive a notification.'}
             </p>
             <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
-              Redirecting to the Cars page…
-
+              {t('exchange.redirecting')}
             </p>
           </div>
         </div>
@@ -746,13 +745,11 @@ function ExchangeRequestPage() {
           >
             {submitting ? (
               <>
-                <Loader2 size={16} className="animate-spin" /> Being sent…
-
+                <Loader2 size={16} className="animate-spin" /> {t('common.beingSent')}
               </>
             ) : (
               <>
-                <WhatsAppIcon size={17} /> Send Details on WhatsApp
-
+                <WhatsAppIcon size={17} /> {t('common.sendDetailsWhatsapp')}
               </>
             )}
           </button>

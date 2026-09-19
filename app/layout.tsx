@@ -35,7 +35,7 @@ const nastaliq = Noto_Nastaliq_Urdu({
 
 // ── Constants ──────────────────────────────────────────────────────────────
 const VALID_LANGS = ['roman', 'en', 'ur'];
-const DEFAULT     = 'roman';
+const DEFAULT     = 'en';
 
 // ── Metadata ───────────────────────────────────────────────────────────────
 export const metadata: Metadata = {

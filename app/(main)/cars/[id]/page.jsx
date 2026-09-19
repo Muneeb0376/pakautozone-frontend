@@ -82,6 +82,7 @@ import AuthModal from '@/components/auth/AuthModal';
 import { getCarImageUrl, isCloudinary, WATERMARK_TEXT } from '@/lib/carImage';
 import { formatPrice, formatPriceExact } from '@/lib/formatPrice';
 import { carTitle, toTitleCase, humanizeEnum, personName } from '@/lib/textCase';
+import { translateApiError } from '@/lib/i18n';
 
 const API = process.env.NEXT_PUBLIC_API_URL || '/api';
 const BASE = API.replace(/\/api\/?$/, '');
@@ -193,12 +194,12 @@ export default function CarDetailPage() {
         setLoading(true);
         const res = await fetch(`${API}/cars/${carId}`);
         const json = await res.json();
-        if (!json.success || !json.data) { setError('Ye car nahi mili'); return; }
+        if (!json.success || !json.data) { setError(t('car.notFound')); return; }
         setCar(json.data);
         setImageIndex(0);
         setShowPhone(false);
-      } catch {
-        setError('Car load nahi ho saki');
+      } catch (err) {
+        setError(translateApiError(err, t));
       } finally {
         setLoading(false);
       }
@@ -688,7 +689,7 @@ export default function CarDetailPage() {
                   }}
                 >
                   {chatLoading
-                    ? <><Loader2 size={16} className="animate-spin" />Ruk jayein…</>
+                    ? <><Loader2 size={16} className="animate-spin" />{t('common.loading')}</>
                     : <><MessageCircle size={16} />{t('seller.sendMessage')}</>}
                 </button>
 

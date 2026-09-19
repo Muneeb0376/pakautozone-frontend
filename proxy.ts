@@ -13,7 +13,7 @@ import type { NextRequest } from 'next/server';
 
 const COOKIE_KEY  = 'autopk_lang';
 const VALID_LANGS = ['roman', 'en', 'ur'];
-const DEFAULT     = 'roman';
+const DEFAULT     = 'en';
 const ONE_YEAR    = 60 * 60 * 24 * 365;
 
 export function proxy(request: NextRequest) {

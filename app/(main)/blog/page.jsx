@@ -149,7 +149,7 @@ function EmptyState({ filtered, t }) {
 export default async function BlogListingPage({ searchParams }) {
   const sp = await searchParams;
   const cookieStore = await cookies();
-  const lang = cookieStore.get('autopk_lang')?.value || 'roman';
+  const lang = cookieStore.get('autopk_lang')?.value || 'en';
   const t = getT(lang);
 
   const page = Math.max(1, parseInt(sp?.page, 10) || 1);

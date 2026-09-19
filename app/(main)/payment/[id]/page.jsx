@@ -4,6 +4,7 @@ import { useLang } from '@/lib/i18nContext';
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { CheckCircle, Loader2, AlertCircle } from 'lucide-react';
+import { translateApiError } from '@/lib/i18n';
 
 export default function PaymentConfirmPage() {
   const { t } = useLang();
@@ -34,7 +35,7 @@ export default function PaymentConfirmPage() {
       .then(async (r) => {
         if (!r.ok) {
           const err = await r.json();
-          throw new Error(err.message || 'Payment details load nahi hue');
+          throw new Error(err.message || t('payment.notFound'));
         }
         return r.json();
       })
@@ -44,14 +45,14 @@ export default function PaymentConfirmPage() {
         setFetching(false);
       })
       .catch((err) => {
-        setFetchError(err.message || 'Network error');
+        setFetchError(translateApiError(err, t));
         setFetching(false);
       });
   }, [id, router]);
 
   const handleConfirm = async () => {
     if (!txId.trim()) {
-      setSubmitError('Transaction ID required hai');
+      setSubmitError(t('payment.transactionRequired'));
       return;
     }
     setSubmitError('');
@@ -72,12 +73,12 @@ export default function PaymentConfirmPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.message || 'Confirm karne mein error aya');
+        throw new Error(data.message || t('payment.confirmFailed'));
       }
 
       setDone(true);
     } catch (err) {
-      setSubmitError(err.message || 'Network error — dobara try karein');
+      setSubmitError(translateApiError(err, t));
     } finally {
       setLoading(false);
     }
@@ -89,7 +90,7 @@ export default function PaymentConfirmPage() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-8 h-8 animate-spin text-blue-600 mx-auto mb-3" />
-          <p className="text-gray-500 text-sm">Payment details load ho rahi hain...</p>
+          <p className="text-gray-500 text-sm">{t('payment.loadingDetails')}</p>
         </div>
       </div>
     );
@@ -101,7 +102,7 @@ export default function PaymentConfirmPage() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
         <div className="bg-white rounded-2xl p-8 text-center max-w-sm border border-red-100 shadow-sm">
           <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-3" />
-          <h2 className="text-lg font-bold text-gray-900 mb-2">Load Nahi Hua</h2>
+          <h2 className="text-lg font-bold text-gray-900 mb-2">{t('payment.detailsNotLoaded')}</h2>
           <p className="text-sm text-gray-500 mb-5">{fetchError}</p>
           <button
             onClick={() => router.push('/dashboard')}
@@ -118,9 +119,9 @@ export default function PaymentConfirmPage() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
         <div className="bg-white rounded-2xl p-8 text-center max-w-sm border border-gray-100 shadow-sm">
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-gray-900">Payment Submit Ho Gaya!</h2>
+          <h2 className="text-xl font-bold text-gray-900">{t('payment.successTitle')}</h2>
           <p className="text-gray-500 text-sm mt-2">
-            24 hours mein verify hoga aur premium features activate ho jayenge.
+            {t('payment.successBody')}
           </p>
           <button
             onClick={() => router.push('/dashboard')}
@@ -135,9 +136,9 @@ export default function PaymentConfirmPage() {
   return (
     <div className="min-h-screen bg-gray-50 py-10 px-4">
       <div className="max-w-md mx-auto bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-        <h2 className="text-xl font-bold text-gray-900 mb-1">Payment Confirm Karo</h2>
+        <h2 className="text-xl font-bold text-gray-900 mb-1">{t('payment.confirmTitle')}</h2>
         <p className="text-sm text-gray-500 mb-5">
-          Niche di gayi details par payment kar ke TRX ID enter karein
+          {t('payment.confirmSubtitle')}
         </p>
 
         {/* Payment Details Card */}
@@ -207,10 +208,10 @@ export default function PaymentConfirmPage() {
           {loading ? (
             <>
               <Loader2 size={16} className="animate-spin" />
-              Submitting...
+              {t('payment.submitting')}
             </>
           ) : (
-            'Submit Karo'
+            t('payment.submitNow')
           )}
         </button>
       </div>

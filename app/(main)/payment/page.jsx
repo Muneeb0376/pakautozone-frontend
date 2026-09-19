@@ -5,6 +5,7 @@ import { useLang } from '@/lib/i18nContext';
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { CreditCard, Loader2, AlertCircle } from 'lucide-react';
+import { translateApiError } from '@/lib/i18n';
 
 const METHODS = [
   { id: 'JazzCash', label: 'JazzCash' },
@@ -30,13 +31,13 @@ function PaymentListingInner() {
       return;
     }
     if (!carId) {
-      setError('Car ID missing hai — dashboard se dobara try karein.');
+      setError(t('payment.startFailed'));
     }
   }, [carId, router]);
 
   const handlePay = async () => {
     if (!carId) {
-      setError('Car ID missing hai.');
+      setError(t('payment.startFailed'));
       return;
     }
     setError('');
@@ -59,14 +60,14 @@ function PaymentListingInner() {
       const data = await res.json();
 
       if (!res.ok || !data.success) {
-        throw new Error(data.message || 'Payment initiate nahi ho saki');
+        throw new Error(data.message || t('payment.startFailed'));
       }
 
       // ✅ Payment record ban gaya — ab common confirm page par bhejo
       // jahan user TID submit karega.
       router.push(`/payment/${data.data.id}/confirm`);
     } catch (err) {
-      setError(err.message || 'Network error — dobara try karein');
+      setError(translateApiError(err, t));
       setLoading(false);
     }
   };

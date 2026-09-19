@@ -76,7 +76,7 @@ export async function generateMetadata({ params }) {
 export default async function BlogDetailPage({ params }) {
   const { slug } = await params;
   const cookieStore = await cookies();
-  const t = getT(cookieStore.get('autopk_lang')?.value || 'roman');
+  const t = getT(cookieStore.get('autopk_lang')?.value || 'en');
   const blog = await fetchBlogBySlug(slug);
 
   // Draft, delete-shuda, ya ghalat slug → Next ka 404

@@ -62,6 +62,7 @@ import { api } from '@/lib/api';
 import { useAuthStore } from '@/store/authStore';
 import Logo from '@/components/layout/Logo';
 import { useLang } from '@/lib/i18nContext';
+import { translateApiError } from '@/lib/i18n';
 
 // ✅ FIX: NEXT_PUBLIC_ prefix zaroori hai — warna browser mein undefined aata hai
 const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
@@ -227,9 +228,9 @@ export default function AuthModal({ onClose, message, redirectAfter }) {
     try {
       const data = await api.post('/auth/google', { idToken: response.credential });
       if (data?.token && data?.user) completeAuth(data.user, data.token);
-      else setError(data?.message || t('auth.errGoogleFailed'));
+      else setError(translateApiError({ message: data?.message || 'Google login failed' }, t));
     } catch (err) {
-      setError(err?.response?.data?.message || t('auth.errGoogleFailed'));
+      setError(translateApiError(err, t));
     } finally {
       setLoading(false);
     }
@@ -312,9 +313,9 @@ export default function AuthModal({ onClose, message, redirectAfter }) {
           });
 
       if (data?.token) completeAuth(data.user, data.token);
-      else setError(data?.message || t('common.somethingWrong'));
+      else setError(translateApiError({ message: data?.message || 'Login failed' }, t));
     } catch (err) {
-      setError(err?.response?.data?.message || t('common.somethingWrong'));
+      setError(translateApiError(err, t));
     } finally {
       setLoading(false);
     }
@@ -348,11 +349,7 @@ export default function AuthModal({ onClose, message, redirectAfter }) {
     } catch (err) {
       // ✅ Asal wajah dikhao — pehle sirf generic message aata tha, is
       // liye pata hi nahi chalta tha ke masla number ka hai ya server ka
-      setError(
-        err?.response?.data?.message ||
-        err?.message ||
-        t('auth.errOtpSend')
-      );
+      setError(translateApiError(err, t));
       console.error('[auth] OTP request fail:', err);
     } finally {
       setLoading(false);
@@ -388,10 +385,10 @@ export default function AuthModal({ onClose, message, redirectAfter }) {
         }
         completeAuth(data.user, data.token);
       } else {
-        setError(data?.message || t('auth.errOtpWrong'));
+        setError(translateApiError({ message: data?.message || 'OTP verification failed' }, t));
       }
     } catch (err) {
-      setError(err?.response?.data?.message || t('auth.errOtpVerify'));
+      setError(translateApiError(err, t));
     } finally {
       setLoading(false);
     }
